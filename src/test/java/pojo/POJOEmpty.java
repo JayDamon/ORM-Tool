@@ -1,6 +1,6 @@
 package pojo;
 
-import orm.Crudable;
+import libraries.orm.orm.Crudable;
 
 public class POJOEmpty implements Crudable {
     public POJOEmpty() {

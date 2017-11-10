@@ -1,4 +1,4 @@
-package crud;
+package libraries.orm.crud;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -6,7 +6,7 @@ import java.sql.Date;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.jupiter.api.Test;
-import orm.Table;
+import libraries.orm.orm.Table;
 import pojo.POJOWithAnnotations;
 
 class InsertQueryTestWithCompletePOJO {

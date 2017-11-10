@@ -1,9 +1,9 @@
-package orm;
+package libraries.orm.orm;
 
-import annotations.ColumnName;
-import annotations.DataTable;
-import annotations.ID;
-import annotations.TableName;
+import libraries.orm.annotations.ColumnName;
+import libraries.orm.annotations.DataTable;
+import libraries.orm.annotations.ID;
+import libraries.orm.annotations.TableName;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;

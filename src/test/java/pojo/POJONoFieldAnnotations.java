@@ -1,8 +1,8 @@
 package pojo;
 
-import annotations.TableName;
+import libraries.orm.annotations.TableName;
 import java.util.Date;
-import orm.Crudable;
+import libraries.orm.orm.Crudable;
 
 @TableName(
         name = "testTableName"

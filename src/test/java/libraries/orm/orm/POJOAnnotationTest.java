@@ -1,4 +1,4 @@
-package orm;
+package libraries.orm.orm;
 
 class POJOAnnotationTest {
     POJOAnnotationTest() {

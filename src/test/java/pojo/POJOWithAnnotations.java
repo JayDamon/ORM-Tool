@@ -1,10 +1,10 @@
 package pojo;
 
-import annotations.ColumnName;
-import annotations.ID;
-import annotations.TableName;
+import libraries.orm.annotations.ColumnName;
+import libraries.orm.annotations.ID;
+import libraries.orm.annotations.TableName;
 import java.sql.Date;
-import orm.Crudable;
+import libraries.orm.orm.Crudable;
 
 @TableName(
         name = "testTableName"

@@ -1,9 +1,9 @@
-package orm;
+package libraries.orm.orm;
 
-import annotations.ColumnName;
+import libraries.orm.annotations.ColumnName;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import utility.StringUtility;
+import libraries.orm.utility.StringUtility;
 
 public class Column {
     private ColumnName columnName;

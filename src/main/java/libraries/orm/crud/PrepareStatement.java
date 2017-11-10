@@ -1,4 +1,4 @@
-package crud;
+package libraries.orm.crud;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

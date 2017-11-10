@@ -1,7 +1,7 @@
 package pojo;
 
 import java.util.Date;
-import orm.Crudable;
+import libraries.orm.orm.Crudable;
 
 public class POJONoAnnotation implements Crudable {
     private String testString;

@@ -1,6 +1,6 @@
-package crud;
+package libraries.orm.crud;
 
-import orm.Table;
+import libraries.orm.orm.Table;
 
 public class DeleteQuery extends Query {
     public DeleteQuery() {

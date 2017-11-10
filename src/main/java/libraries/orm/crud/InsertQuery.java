@@ -1,8 +1,8 @@
-package crud;
+package libraries.orm.crud;
 
 import java.util.List;
-import orm.Column;
-import orm.Table;
+import libraries.orm.orm.Column;
+import libraries.orm.orm.Table;
 
 public class InsertQuery extends Query {
     public InsertQuery() {

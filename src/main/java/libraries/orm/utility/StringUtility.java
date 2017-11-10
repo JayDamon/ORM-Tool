@@ -1,4 +1,4 @@
-package utility;
+package libraries.orm.utility;
 
 public class StringUtility {
     public StringUtility() {

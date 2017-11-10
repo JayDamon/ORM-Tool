@@ -1,9 +1,9 @@
-package crud;
+package libraries.orm.crud;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import orm.Table;
+
+import libraries.orm.orm.Table;
 
 public abstract class Query {
     public Query() {

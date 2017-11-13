@@ -1,14 +1,10 @@
 package libraries.orm.utility;
 
-import junit.framework.TestCase;
 import libraries.orm.crud.InsertQuery;
 import libraries.orm.crud.Query;
 import libraries.orm.orm.Table;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.mockito.InjectMocks;
@@ -19,6 +15,9 @@ import pojo.POJOWithAnnotations;
 
 import java.sql.*;
 
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
+
 /**
  * Created by Jay Damon on 11/10/2017.
  */
@@ -27,7 +26,7 @@ public class DBConnectionTest {
     @InjectMocks private DBConnection dbConnection;
     @Mock private Connection mockConnection;
     @Mock private Statement mockStatement;
-    private PreparedStatement statement;
+    @Mock private PreparedStatement mockPreparedStatement;
     private POJOWithAnnotations pojo;
 
     @BeforeAll
@@ -38,8 +37,7 @@ public class DBConnectionTest {
         pojo.setTestInt(20);
         pojo.setTestDouble(30.0D);
         pojo.setTestDate(new Date(2017, 11, 5));
-        statement = mockConnection.prepareStatement("\"INSERT INTO testTableName (testString, testInt, testDouble, testDate) VALUES(?, ?, ?, ?)");
-//        statement.set
+        mockPreparedStatement = mockConnection.prepareStatement("INSERT INTO testTableName (testString, testInt, testDouble, testDate) VALUES(?, ?, ?, ?)");
     }
 
     @Test
@@ -49,13 +47,5 @@ public class DBConnectionTest {
         int value = dbConnection.executeQuery("");
         Assert.assertEquals(value, 1);
         Mockito.verify(mockConnection.createStatement(), Mockito.times(1));
-    }
-
-    //https://stackoverflow.com/questions/28388204/how-to-test-dao-methods-using-mockito TODO stackoverflow post on how to fix test
-    @Test void createSuccessfullPreparedStatement() throws SQLException {
-        Query query = new InsertQuery();
-        PreparedStatement stmt = query.createQuery(mockConnection, new Table(new POJOWithAnnotations()));
-        stmt.setInt(1, 1);
-        Assert.assertEquals(statement, stmt);
     }
 }

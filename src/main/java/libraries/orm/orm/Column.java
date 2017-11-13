@@ -3,6 +3,8 @@ package libraries.orm.orm;
 import libraries.orm.annotations.ColumnName;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+
 import libraries.orm.utility.StringUtility;
 
 public class Column {
@@ -10,7 +12,7 @@ public class Column {
     private Method getterMethod;
 
     public Column(Crudable object, Field field) throws NoSuchMethodException {
-        this.setColumnName((ColumnName)field.getAnnotation(ColumnName.class));
+        this.setColumnName(field.getAnnotation(ColumnName.class));
         this.setGetterMethod(this.createGetterMethod(object, field));
     }
 

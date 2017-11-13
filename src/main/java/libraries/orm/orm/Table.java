@@ -13,32 +13,34 @@ public class Table {
     private TableName tableName;
     private List<Column> columnList;
     private ID id;
+    private Crudable crudable;
 
-    public Table(Crudable c) {
-        this.setTableName(this.getTableNameFromObject(c));
-        this.setColumnList(this.getColumnNameFields(c));
+    public Table(Crudable crudable) {
+        this.setCrudable(crudable);
+        this.setTableName(this.getTableNameFromObject());
+        this.setColumnList(this.getColumnNameFields());
     }
 
-    private TableName getTableNameFromObject(Crudable c) {
-        if (c.getClass().isAnnotationPresent(TableName.class)) {
-            return (TableName)c.getClass().getAnnotation(TableName.class);
+    private TableName getTableNameFromObject() {
+        if (crudable.getClass().isAnnotationPresent(TableName.class)) {
+            return crudable.getClass().getAnnotation(TableName.class);
         } else {
-            throw new IllegalArgumentException(c.getClass().toString() + " does not have a 'TableName' Annotation");
+            throw new IllegalArgumentException(crudable.getClass().toString() + " does not have a 'TableName' Annotation");
         }
     }
 
-    private List<Column> getColumnNameFields(Crudable c) {
+    private List<Column> getColumnNameFields() {
         List<Column> names = new ArrayList();
-        Field[] fields = c.getClass().getDeclaredFields();
+        Field[] fields = crudable.getClass().getDeclaredFields();
         boolean idExists = false;
         boolean columnNameExists = false;
 
         for (Field f : fields) {
             if (f.isAnnotationPresent(ColumnName.class)) {
-                this.addColumn(names, c, f);
+                this.addColumn(names, crudable, f);
                 columnNameExists = true;
             } else if (f.isAnnotationPresent(ID.class)) {
-                this.setId((ID) f.getAnnotation(ID.class));
+                this.setId(f.getAnnotation(ID.class));
                 idExists = true;
             }
         }
@@ -46,11 +48,11 @@ public class Table {
         if (idExists && columnNameExists) {
             return names;
         } else if (!idExists && !columnNameExists) {
-            throw new IllegalArgumentException(c.getClass().toString() + ": There is not ID or ColumnName field or they are annotated incorrectly");
+            throw new IllegalArgumentException(crudable.getClass().toString() + ": There is not ID or ColumnName field or they are annotated incorrectly");
         } else if (!idExists) {
-            throw new IllegalArgumentException(c.getClass().toString() + ": ID Field does not exist or is not annotated properly");
+            throw new IllegalArgumentException(crudable.getClass().toString() + ": ID Field does not exist or is not annotated properly");
         } else {
-            throw new IllegalArgumentException(c.getClass().toString() + ": There is no ColumnName Field in class or is not annotated properly");
+            throw new IllegalArgumentException(crudable.getClass().toString() + ": There is no ColumnName Field in class or is not annotated properly");
         }
     }
 
@@ -84,5 +86,13 @@ public class Table {
 
     public void setId(ID id) {
         this.id = id;
+    }
+
+    public Crudable getCrudable() {
+        return crudable;
+    }
+
+    public void setCrudable(Crudable crudable) {
+        this.crudable = crudable;
     }
 }

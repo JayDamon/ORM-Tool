@@ -53,12 +53,6 @@ class InsertQueryTestWithCompletePOJO {
     @Test
     public void getterMethodsReturnValue() throws InvocationTargetException, IllegalAccessException, InstantiationException {
         Table table = new Table(pojo);
-//        Iterator var1 = ().getColumnList().iterator();
-//
-//        while(var1.hasNext()) {
-//            Column c = (Column)var1.next();
-//            Assertions.assertNotNull(c.getGetterMethod());
-//        }
         for (int i = 0 ; i < table.getColumnList().size() ; i++) {
             Column c = table.getColumnList().get(i);
             Object o = c.getGetterMethod().invoke(table.getCrudable());

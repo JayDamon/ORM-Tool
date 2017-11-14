@@ -17,7 +17,7 @@ public abstract class Query {
     public PreparedStatement createQuery(Connection conn, Table table)
             throws SQLException, InvocationTargetException, IllegalAccessException
     {
-        PreparedStatement statement = PrepareStatement.preparedStatement(conn, this.createQueryString(table));
+        PreparedStatement statement = conn.prepareStatement(this.createQueryString(table));
         setParameters(table, statement);
         return statement;
     }
@@ -28,7 +28,7 @@ public abstract class Query {
         for (int i = 0 ; i < table.getColumnList().size() ; i++) {
             Column c = table.getColumnList().get(i);
             Object o = c.getGetterMethod().invoke(table.getCrudable());
-            setParameterBasedOnType(statement, i, o);
+            setParameterBasedOnType(statement, i + 1, o);
         }
     }
 
@@ -40,7 +40,7 @@ public abstract class Query {
         } else if (o instanceof Short) {
             setStatementParameter(statement, i, (short)o);
         } else if (o instanceof BigDecimal) {
-            setStatementParameter(statement, i, (BigDecimal) o);
+            setStatementParameter(statement, i, new BigDecimal(o.toString()));
         } else if (o instanceof Byte) {
             setStatementParameter(statement, i, (byte)o);
         } else if (o instanceof Boolean) {

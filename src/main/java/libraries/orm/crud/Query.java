@@ -15,8 +15,7 @@ public abstract class Query {
     }
 
     public PreparedStatement createQuery(Connection conn, Table table)
-            throws SQLException, InstantiationException,
-            IllegalAccessException, InvocationTargetException
+            throws SQLException, InvocationTargetException, IllegalAccessException
     {
         PreparedStatement statement = PrepareStatement.preparedStatement(conn, this.createQueryString(table));
         setParameters(table, statement);
@@ -24,14 +23,11 @@ public abstract class Query {
     }
 
     public void setParameters(Table table, PreparedStatement statement)
-            throws SQLException, InvocationTargetException,
-            IllegalAccessException, InstantiationException
+            throws SQLException, InvocationTargetException, IllegalAccessException
     {
-        Class<?> clazz = table.getCrudable().getClass();
-        Object newInstance = clazz.newInstance();
         for (int i = 0 ; i < table.getColumnList().size() ; i++) {
             Column c = table.getColumnList().get(i);
-            Object o = c.getGetterMethod().invoke(newInstance);
+            Object o = c.getGetterMethod().invoke(table.getCrudable());
             setParameterBasedOnType(statement, i, o);
         }
     }

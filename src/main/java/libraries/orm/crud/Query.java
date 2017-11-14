@@ -15,14 +15,18 @@ public abstract class Query {
     }
 
     public PreparedStatement createQuery(Connection conn, Table table)
-            throws SQLException, InstantiationException, IllegalAccessException, InvocationTargetException {
+            throws SQLException, InstantiationException,
+            IllegalAccessException, InvocationTargetException
+    {
         PreparedStatement statement = PrepareStatement.preparedStatement(conn, this.createQueryString(table));
         setParameters(table, statement);
         return statement;
     }
 
     public void setParameters(Table table, PreparedStatement statement)
-            throws SQLException, InvocationTargetException, IllegalAccessException, InstantiationException {
+            throws SQLException, InvocationTargetException,
+            IllegalAccessException, InstantiationException
+    {
         Class<?> clazz = table.getCrudable().getClass();
         Object newInstance = clazz.newInstance();
         for (int i = 0 ; i < table.getColumnList().size() ; i++) {

@@ -1,6 +1,8 @@
 package libraries.orm.orm;
 
 import libraries.orm.annotations.DataTable;
+
+import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -28,6 +30,14 @@ class TableTest {
     @Test
     public void getIDFromAnnotatedClass() {
         Assertions.assertEquals("id", (new Table(new POJOWithAnnotations())).getId().idColumnName());
+    }
+
+    @Test
+    public void getIDValueFromTable() throws InvocationTargetException, IllegalAccessException {
+        POJOWithAnnotations pojo = new POJOWithAnnotations();
+        pojo.setId(1);
+
+        Assertions.assertEquals(1, new Table(pojo).getIdColumn().getGetterMethod().invoke(pojo));
     }
 
     @Test

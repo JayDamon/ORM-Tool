@@ -1,5 +1,8 @@
 package libraries.orm.crud;
 
+import java.lang.reflect.InvocationTargetException;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 import libraries.orm.orm.Column;
 import libraries.orm.orm.Table;
@@ -24,5 +27,15 @@ public class UpdateQuery extends Query {
 
         updateQuery.append("WHERE ").append(table.getId().idColumnName()).append(" = ?");
         return updateQuery.toString();
+    }
+
+    @Override
+    public void setParameters(Table table, PreparedStatement statement)
+            throws SQLException, InvocationTargetException,
+            IllegalAccessException, InstantiationException
+    {
+        super.setParameters(table, statement);
+        Object o = table.getIdColumn().getGetterMethod().invoke(table.getCrudable());
+        setParameterBasedOnType(statement, table.getColumnList().size() + 2, o);
     }
 }

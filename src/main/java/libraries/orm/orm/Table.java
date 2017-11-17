@@ -5,6 +5,7 @@ import libraries.orm.annotations.DataTable;
 import libraries.orm.annotations.ID;
 import libraries.orm.annotations.TableName;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +15,7 @@ public class Table {
     private List<Column> columnList;
     private ID id;
     private Crudable crudable;
+    private Column idColumn;
 
     public Table(Crudable crudable) {
         this.setCrudable(crudable);
@@ -41,6 +43,7 @@ public class Table {
                 columnNameExists = true;
             } else if (f.isAnnotationPresent(ID.class)) {
                 this.setId(f.getAnnotation(ID.class));
+                this.setIdColumn(createColumn(f));
                 idExists = true;
             }
         }
@@ -61,6 +64,14 @@ public class Table {
             names.add(new Column(c, f));
         } catch (NoSuchMethodException var5) {
             throw new IllegalArgumentException(c.getClass().toString() + ": Getter method does not exist or it is not named properly", var5);
+        }
+    }
+
+    private Column createColumn(Field field) {
+        try {
+            return new Column(crudable, field);
+        } catch (NoSuchMethodException var5) {
+            throw new IllegalArgumentException(crudable.getClass().toString() + ": Getter method does not exist or it is not named properly", var5);
         }
     }
 
@@ -94,5 +105,13 @@ public class Table {
 
     public void setCrudable(Crudable crudable) {
         this.crudable = crudable;
+    }
+
+    public Column getIdColumn() {
+        return idColumn;
+    }
+
+    public void setIdColumn(Column idColumn) {
+        this.idColumn = idColumn;
     }
 }

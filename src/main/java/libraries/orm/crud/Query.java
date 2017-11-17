@@ -31,12 +31,12 @@ public abstract class Query {
         Object newInstance = clazz.newInstance();
         for (int i = 0 ; i < table.getColumnList().size() ; i++) {
             Column c = table.getColumnList().get(i);
-            Object o = c.getGetterMethod().invoke(newInstance);
-            setParameterBasedOnType(statement, i, o);
+            Object o = c.getGetterMethod().invoke(table.getCrudable());
+            setParameterBasedOnType(statement, i + 1, o);
         }
     }
 
-    private void setParameterBasedOnType(PreparedStatement statement, int i, Object o) throws SQLException {
+    protected void setParameterBasedOnType(PreparedStatement statement, int i, Object o) throws SQLException {
         if (o instanceof Integer) {
             setStatementParameter(statement, i, (int)o);
         } else if (o instanceof String) {

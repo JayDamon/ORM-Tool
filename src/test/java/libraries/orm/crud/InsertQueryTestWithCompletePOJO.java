@@ -3,8 +3,12 @@ package libraries.orm.crud;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Date;
+import java.util.Iterator;
+
+import libraries.orm.orm.Column;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import libraries.orm.orm.Table;
@@ -44,6 +48,16 @@ class InsertQueryTestWithCompletePOJO {
         Method method = DeleteQuery.class.getDeclaredMethod("createQueryString", Table.class);
         method.setAccessible(true);
         Assert.assertEquals("DELETE FROM testTableName WHERE id = ?", method.invoke(new DeleteQuery(), new Table(pojo)));
+    }
+
+    @Test
+    public void getterMethodsReturnValue() throws InvocationTargetException, IllegalAccessException, InstantiationException {
+        Table table = new Table(pojo);
+        for (int i = 0 ; i < table.getColumnList().size() ; i++) {
+            Column c = table.getColumnList().get(i);
+            Object o = c.getGetterMethod().invoke(table.getCrudable());
+            System.out.println(o.toString());
+        }
     }
 
 }

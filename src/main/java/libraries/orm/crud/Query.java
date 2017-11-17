@@ -15,20 +15,16 @@ public abstract class Query {
     }
 
     public PreparedStatement createQuery(Connection conn, Table table)
-            throws SQLException, InstantiationException,
-            IllegalAccessException, InvocationTargetException
+            throws SQLException, InvocationTargetException, IllegalAccessException
     {
-        PreparedStatement statement = PrepareStatement.preparedStatement(conn, this.createQueryString(table));
+        PreparedStatement statement = conn.prepareStatement(this.createQueryString(table));
         setParameters(table, statement);
         return statement;
     }
 
     public void setParameters(Table table, PreparedStatement statement)
-            throws SQLException, InvocationTargetException,
-            IllegalAccessException, InstantiationException
+            throws SQLException, InvocationTargetException, IllegalAccessException
     {
-        Class<?> clazz = table.getCrudable().getClass();
-        Object newInstance = clazz.newInstance();
         for (int i = 0 ; i < table.getColumnList().size() ; i++) {
             Column c = table.getColumnList().get(i);
             Object o = c.getGetterMethod().invoke(table.getCrudable());
@@ -44,7 +40,7 @@ public abstract class Query {
         } else if (o instanceof Short) {
             setStatementParameter(statement, i, (short)o);
         } else if (o instanceof BigDecimal) {
-            setStatementParameter(statement, i, (BigDecimal) o);
+            setStatementParameter(statement, i, new BigDecimal(o.toString()));
         } else if (o instanceof Byte) {
             setStatementParameter(statement, i, (byte)o);
         } else if (o instanceof Boolean) {

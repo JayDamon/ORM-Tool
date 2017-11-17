@@ -40,7 +40,7 @@ public abstract class Query {
         } else if (o instanceof Short) {
             setStatementParameter(statement, i, (short)o);
         } else if (o instanceof BigDecimal) {
-            setStatementParameter(statement, i, new BigDecimal(o.toString()));
+            setStatementParameter(statement, i, (BigDecimal)o);
         } else if (o instanceof Byte) {
             setStatementParameter(statement, i, (byte)o);
         } else if (o instanceof Boolean) {

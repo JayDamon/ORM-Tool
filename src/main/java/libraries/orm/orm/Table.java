@@ -5,7 +5,6 @@ import libraries.orm.annotations.DataTable;
 import libraries.orm.annotations.ID;
 import libraries.orm.annotations.TableName;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 

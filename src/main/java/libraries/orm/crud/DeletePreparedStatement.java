@@ -2,8 +2,8 @@ package libraries.orm.crud;
 
 import libraries.orm.orm.Table;
 
-public class DeleteQuery extends Query {
-    public DeleteQuery() {
+public class DeletePreparedStatement extends PreparedStatement {
+    public DeletePreparedStatement() {
     }
 
     String createQueryString(Table table) {

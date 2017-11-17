@@ -1,14 +1,13 @@
 package libraries.orm.crud;
 
 import java.lang.reflect.InvocationTargetException;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 import libraries.orm.orm.Column;
 import libraries.orm.orm.Table;
 
-public class UpdateQuery extends Query {
-    public UpdateQuery() {
+public class UpdatePreparedStatement extends PreparedStatement {
+    public UpdatePreparedStatement() {
     }
 
     String createQueryString(Table table) {
@@ -30,7 +29,7 @@ public class UpdateQuery extends Query {
     }
 
     @Override
-    public void setParameters(Table table, PreparedStatement statement)
+    public void setParameters(Table table, java.sql.PreparedStatement statement)
             throws SQLException, InvocationTargetException,
             IllegalAccessException
     {

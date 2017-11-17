@@ -1,8 +1,6 @@
 package libraries.orm.utility;
 
-import libraries.orm.crud.InsertQuery;
-import libraries.orm.crud.Query;
-import libraries.orm.orm.Table;
+import libraries.orm.crud.PreparedStatement;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -15,9 +13,6 @@ import pojo.POJOWithAnnotations;
 
 import java.sql.*;
 
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
-
 /**
  * Created by Jay Damon on 11/10/2017.
  */
@@ -26,7 +21,7 @@ public class DBConnectionTest {
     @InjectMocks private DBConnection dbConnection;
     @Mock private Connection mockConnection;
     @Mock private Statement mockStatement;
-    @Mock private PreparedStatement mockPreparedStatement;
+    @Mock private java.sql.PreparedStatement mockPreparedStatement;
     private POJOWithAnnotations pojo;
 
     @BeforeAll

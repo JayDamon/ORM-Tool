@@ -13,7 +13,7 @@ import pojo.POJOTableAndIDAnnotationButNoColumnAnnotations;
 import pojo.POJOWithAnnotations;
 import pojo.POJOWrongGetterNoIDAnnotation;
 
-class TableTest {
+public class TableTest {
     TableTest() {
     }
 

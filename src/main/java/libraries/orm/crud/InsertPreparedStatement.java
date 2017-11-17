@@ -1,13 +1,12 @@
 package libraries.orm.crud;
 
-import java.sql.PreparedStatement;
 import java.util.List;
 import libraries.orm.orm.Column;
 import libraries.orm.orm.Table;
 
-public class InsertQuery extends Query {
+public class InsertPreparedStatement extends PreparedStatement {
 
-    public InsertQuery() {
+    public InsertPreparedStatement() {
     }
 
     String createQueryString(Table table) {

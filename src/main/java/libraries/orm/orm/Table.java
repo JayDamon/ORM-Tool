@@ -113,4 +113,12 @@ public class Table {
     public void setIdColumn(Column idColumn) {
         this.idColumn = idColumn;
     }
+
+    public List<String> getColumnNameList() {
+        List<String> columnNames = new ArrayList<>();
+        for (Column c : columnList) {
+            columnNames.add(c.getColumnName().name());
+        }
+        return columnNames;
+    }
 }

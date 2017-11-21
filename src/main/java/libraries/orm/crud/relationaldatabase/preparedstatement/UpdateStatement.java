@@ -1,4 +1,4 @@
-package libraries.orm.crud;
+package libraries.orm.crud.relationaldatabase.preparedstatement;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
@@ -6,8 +6,8 @@ import java.util.List;
 import libraries.orm.orm.Column;
 import libraries.orm.orm.Table;
 
-public class UpdatePreparedStatement extends PreparedStatement {
-    public UpdatePreparedStatement() {
+public class UpdateStatement extends ORMPreparedStatement {
+    public UpdateStatement() {
     }
 
     String createQueryString(Table table) {
@@ -20,10 +20,8 @@ public class UpdatePreparedStatement extends PreparedStatement {
             if (i != columns.size() - 1) {
                 updateQuery.append(",");
             }
-
             updateQuery.append(" ");
         }
-
         updateQuery.append("WHERE ").append(table.getId().idColumnName()).append(" = ?");
         return updateQuery.toString();
     }

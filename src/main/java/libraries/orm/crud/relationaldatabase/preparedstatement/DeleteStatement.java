@@ -1,9 +1,9 @@
-package libraries.orm.crud;
+package libraries.orm.crud.relationaldatabase.preparedstatement;
 
 import libraries.orm.orm.Table;
 
-public class DeletePreparedStatement extends PreparedStatement {
-    public DeletePreparedStatement() {
+public class DeleteStatement extends ORMPreparedStatement {
+    public DeleteStatement() {
     }
 
     String createQueryString(Table table) {

@@ -1,9 +1,9 @@
 package libraries.orm.crud.relationaldatabase;
 
 import libraries.orm.crud.Crud;
-import libraries.orm.crud.InsertPreparedStatement;
-import libraries.orm.crud.PreparedStatement;
-import libraries.orm.crud.UpdatePreparedStatement;
+import libraries.orm.crud.relationaldatabase.preparedstatement.InsertStatement;
+import libraries.orm.crud.relationaldatabase.preparedstatement.ORMPreparedStatement;
+import libraries.orm.crud.relationaldatabase.preparedstatement.UpdateStatement;
 import libraries.orm.orm.Crudable;
 import libraries.orm.orm.Table;
 
@@ -21,9 +21,9 @@ public class RelationalDatabaseCrud extends Crud<Connection> {
 
     @Override
     public boolean create() throws InvocationTargetException, IllegalAccessException {
-        PreparedStatement preparedStatement = new InsertPreparedStatement();
+        ORMPreparedStatement ORMPreparedStatement = new InsertStatement();
         try (
-                java.sql.PreparedStatement statement = preparedStatement.createQuery(dataSource, new Table(crudable))
+                java.sql.PreparedStatement statement = ORMPreparedStatement.createQuery(dataSource, new Table(crudable))
                 ) {
             return statement.executeUpdate() == 1;
         } catch (SQLException e) {
@@ -40,9 +40,9 @@ public class RelationalDatabaseCrud extends Crud<Connection> {
 
     @Override
     public boolean update() throws InvocationTargetException, IllegalAccessException {
-        PreparedStatement preparedStatement = new UpdatePreparedStatement();
+        ORMPreparedStatement ORMPreparedStatement = new UpdateStatement();
         try (
-                java.sql.PreparedStatement statement = preparedStatement.createQuery(dataSource, new Table(crudable))
+                java.sql.PreparedStatement statement = ORMPreparedStatement.createQuery(dataSource, new Table(crudable))
                 ) {
             return statement.executeUpdate() == 1;
         } catch (SQLException e) {

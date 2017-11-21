@@ -4,6 +4,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Date;
 
+import libraries.orm.crud.relationaldatabase.preparedstatement.DeleteStatement;
+import libraries.orm.crud.relationaldatabase.preparedstatement.InsertStatement;
+import libraries.orm.crud.relationaldatabase.preparedstatement.UpdateStatement;
 import libraries.orm.orm.Column;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeAll;
@@ -11,11 +14,8 @@ import org.junit.jupiter.api.Test;
 import libraries.orm.orm.Table;
 import pojo.POJOWithAnnotations;
 
-public class InsertPreparedStatementTestWithCompletePOJO {
+public class InsertStatementTestWithCompletePOJO {
     static private POJOWithAnnotations pojo;
-
-    InsertPreparedStatementTestWithCompletePOJO() {
-    }
 
     @BeforeAll
     static void setup() {
@@ -28,23 +28,23 @@ public class InsertPreparedStatementTestWithCompletePOJO {
 
     @Test
     public void createInsertStatement() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method method = InsertPreparedStatement.class.getDeclaredMethod("createQueryString", Table.class);
+        Method method = InsertStatement.class.getDeclaredMethod("createQueryString", Table.class);
         method.setAccessible(true);
-        Assert.assertEquals("INSERT INTO testTableName (testString, testInt, testDouble, testDate) VALUES(?, ?, ?, ?)", method.invoke(new InsertPreparedStatement(), new Table(pojo)));
+        Assert.assertEquals("INSERT INTO testTableName (testString, testInt, testDouble, testDate) VALUES(?, ?, ?, ?)", method.invoke(new InsertStatement(), new Table(pojo)));
     }
 
     @Test
     public void createUpdateStatement() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method method = UpdatePreparedStatement.class.getDeclaredMethod("createQueryString", Table.class);
+        Method method = UpdateStatement.class.getDeclaredMethod("createQueryString", Table.class);
         method.setAccessible(true);
-        Assert.assertEquals("UPDATE testTableName SET testString = ?, testInt = ?, testDouble = ?, testDate = ? WHERE id = ?", method.invoke(new UpdatePreparedStatement(), new Table(pojo)));
+        Assert.assertEquals("UPDATE testTableName SET testString = ?, testInt = ?, testDouble = ?, testDate = ? WHERE id = ?", method.invoke(new UpdateStatement(), new Table(pojo)));
     }
 
     @Test
     public void createDeleteStatement() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method method = DeletePreparedStatement.class.getDeclaredMethod("createQueryString", Table.class);
+        Method method = DeleteStatement.class.getDeclaredMethod("createQueryString", Table.class);
         method.setAccessible(true);
-        Assert.assertEquals("DELETE FROM testTableName WHERE id = ?", method.invoke(new DeletePreparedStatement(), new Table(pojo)));
+        Assert.assertEquals("DELETE FROM testTableName WHERE id = ?", method.invoke(new DeleteStatement(), new Table(pojo)));
     }
 
     @Test

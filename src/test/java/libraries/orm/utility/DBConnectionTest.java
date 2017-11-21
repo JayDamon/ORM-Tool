@@ -1,6 +1,5 @@
 package libraries.orm.utility;
 
-import libraries.orm.crud.PreparedStatement;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

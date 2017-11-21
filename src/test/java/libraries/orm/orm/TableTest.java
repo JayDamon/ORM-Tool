@@ -2,15 +2,12 @@ package libraries.orm.orm;
 
 import libraries.orm.annotations.DataTable;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.Iterator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import pojo.POJOEmpty;
 import pojo.POJONoAnnotation;
 import pojo.POJONoFieldAnnotations;
 import pojo.POJOTableAndIDAnnotationButNoColumnAnnotations;
-import pojo.POJOWithAnnotations;
 import pojo.POJOWrongGetterNoIDAnnotation;
 
 public class TableTest {
@@ -22,56 +19,13 @@ public class TableTest {
         Assertions.assertEquals(DataTable.class, ((DataTable)Table.class.getAnnotation(DataTable.class)).annotationType());
     }
 
-    @Test
-    public void getTableNameFromAnnotatedClass() {
-        Assertions.assertEquals("testTableName", (new Table(new POJOWithAnnotations())).getTableName().name());
-    }
 
-    @Test
-    public void getIDFromAnnotatedClass() {
-        Assertions.assertEquals("id", (new Table(new POJOWithAnnotations())).getId().idColumnName());
-    }
-
-    @Test
-    public void getIDValueFromTable() throws InvocationTargetException, IllegalAccessException {
-        POJOWithAnnotations pojo = new POJOWithAnnotations();
-        pojo.setId(1);
-
-        Assertions.assertEquals(1, new Table(pojo).getIdColumn().getGetterMethod().invoke(pojo));
-    }
 
     @Test
     public void getIllegalArgumentExceptionWhenNoIdExists() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             new Table(new POJONoFieldAnnotations());
         });
-    }
-
-    @Test
-    public void objectHasColumnNameFields() {
-        Assertions.assertEquals(4, (new Table(new POJOWithAnnotations())).getColumnList().size());
-    }
-
-    @Test
-    public void columnListNameExist() {
-        Iterator var1 = (new Table(new POJOWithAnnotations())).getColumnList().iterator();
-
-        while(var1.hasNext()) {
-            Column c = (Column)var1.next();
-            Assertions.assertNotNull(c.getColumnName());
-        }
-
-    }
-
-    @Test
-    public void columnListGettersExist() {
-        Iterator var1 = (new Table(new POJOWithAnnotations())).getColumnList().iterator();
-
-        while(var1.hasNext()) {
-            Column c = (Column)var1.next();
-            Assertions.assertNotNull(c.getGetterMethod());
-        }
-
     }
 
     @Test
@@ -115,4 +69,6 @@ public class TableTest {
             new Table(new POJOWrongGetterNoIDAnnotation());
         });
     }
+
+
 }

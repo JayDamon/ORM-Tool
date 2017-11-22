@@ -1,6 +1,7 @@
 package libraries.orm.crud.relationaldatabase.preparedstatement;
 
 import java.lang.reflect.InvocationTargetException;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 import libraries.orm.orm.Column;
@@ -27,7 +28,7 @@ public class UpdateStatement extends ORMPreparedStatement {
     }
 
     @Override
-    public void setParameters(Table table, java.sql.PreparedStatement statement)
+    public void setParameters(Table table, PreparedStatement statement)
             throws SQLException, InvocationTargetException,
             IllegalAccessException
     {

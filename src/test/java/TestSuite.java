@@ -15,5 +15,4 @@ import org.junit.runner.RunWith;
         QueryTest.class,
         TableTestPOJOWithAnnotations.class
 })
-public class TestSuite {
-}
+public class TestSuite {}

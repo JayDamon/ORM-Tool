@@ -32,8 +32,8 @@ public class QueryTest {
 
     @Test
     public void createInsertQuery() {
-
-        assertEquals("INSERT INTO testTableName (testString, testInt, testDouble, testDate) VALUES(?, ?, ?, ?)",
+        assertEquals(
+                "INSERT INTO testTableName (testString, testInt, testDouble, testDate) VALUES(?, ?, ?, ?)",
                 new InsertQuery(
                         table.getTableName().name(),
                         columnNames
@@ -43,7 +43,9 @@ public class QueryTest {
 
     @Test
     public void createUpdateQueryWithWhere() {
-        assertEquals("UPDATE testTableName SET testString = ?, testInt = ?, testDouble = ?, testDate = ? WHERE id = ?",
+        assertEquals(
+                "UPDATE testTableName " +
+                        "SET testString = ?, testInt = ?, testDouble = ?, testDate = ? WHERE id = ?",
                 new UpdateQuery(
                         table.getTableName().name(),
                         new WhereClause(
@@ -56,7 +58,8 @@ public class QueryTest {
 
     @Test
     public void createVanillaSelectQuery() {
-        assertEquals("SELECT * FROM testTableName",
+        assertEquals(
+                "SELECT * FROM testTableName",
                 new SelectQuery(
                         table.getTableName().name()
                 ).toString()
@@ -65,7 +68,8 @@ public class QueryTest {
 
     @Test
     public void createSelectQueryWithOneColumn() {
-        assertEquals("SELECT testString FROM testTableName",
+        assertEquals(
+                "SELECT testString FROM testTableName",
                 new SelectQuery(
                         table.getTableName().name(),
                         table.getColumnNameList().get(0)
@@ -77,7 +81,8 @@ public class QueryTest {
     public void createSelectQueryWithMultipleColumns() {
         String[] args = new String[table.getColumnNameList().size()];
         args = table.getColumnNameList().toArray(args);
-        assertEquals("SELECT testString, testInt, testDouble, testDate FROM testTableName",
+        assertEquals(
+                "SELECT testString, testInt, testDouble, testDate FROM testTableName",
                 new SelectQuery(
                         table.getTableName().name(),
                         args
@@ -89,7 +94,9 @@ public class QueryTest {
     public void createSelectQueryWithWhereClause() {
         String[] args = new String[table.getColumnNameList().size()];
         args = table.getColumnNameList().toArray(args);
-        assertEquals("SELECT testString, testInt, testDouble, testDate FROM testTableName WHERE testString = ? AND testInt = ? AND testDouble = ? AND testDate = ?",
+        assertEquals(
+                "SELECT testString, testInt, testDouble, testDate FROM testTableName " +
+                        "WHERE testString = ? AND testInt = ? AND testDouble = ? AND testDate = ?",
                 new SelectQuery(
                         table.getTableName().name(),
                         new WhereClause(args),
@@ -100,7 +107,8 @@ public class QueryTest {
 
     @Test
     public void createVanillaDeleteQuery() {
-        assertEquals("DELETE FROM testTableName WHERE id = ?",
+        assertEquals(
+                "DELETE FROM testTableName WHERE id = ?",
                 new DeleteQuery(
                         table.getTableName().name(),
                         new WhereClause(
@@ -112,7 +120,8 @@ public class QueryTest {
 
     @Test
     public void createOrderByClauseSingleCondition() {
-        assertEquals(" ORDER BY testString",
+        assertEquals(
+                " ORDER BY testString",
                 new OrderByClause(
                         new String[]{table.getColumnNameList().get(0)}
                         ).toString()
@@ -121,7 +130,8 @@ public class QueryTest {
 
     @Test
     public void createOrderByClauseMultipleCondition() {
-        assertEquals(" ORDER BY testString, testInt",
+        assertEquals(
+                " ORDER BY testString, testInt",
                 new OrderByClause(
                         new String[]{
                                 table.getColumnNameList().get(0),

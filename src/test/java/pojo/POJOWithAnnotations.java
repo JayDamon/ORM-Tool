@@ -6,29 +6,17 @@ import libraries.orm.annotations.TableName;
 import java.sql.Date;
 import libraries.orm.orm.Crudable;
 
-@TableName(
-        name = "testTableName"
-)
+@TableName(name = "testTableName")
 public class POJOWithAnnotations implements Crudable {
-    @ID(
-            idColumnName = "id"
-    )
+    @ID(idColumnName = "id")
     private int id;
-    @ColumnName(
-            name = "testString"
-    )
+    @ColumnName(name = "testString")
     private String testString;
-    @ColumnName(
-            name = "testInt"
-    )
+    @ColumnName(name = "testInt")
     private int testInt;
-    @ColumnName(
-            name = "testDouble"
-    )
+    @ColumnName(name = "testDouble")
     private double testDouble;
-    @ColumnName(
-            name = "testDate"
-    )
+    @ColumnName(name = "testDate")
     private Date testDate;
 
     public POJOWithAnnotations() {

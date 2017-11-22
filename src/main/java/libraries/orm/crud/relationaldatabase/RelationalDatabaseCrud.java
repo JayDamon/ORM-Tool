@@ -1,11 +1,8 @@
 package libraries.orm.crud.relationaldatabase;
 
-import javafx.scene.control.Tab;
 import libraries.orm.crud.Crud;
 import libraries.orm.crud.relationaldatabase.clauses.WhereClause;
-import libraries.orm.crud.relationaldatabase.preparedstatement.InsertStatement;
 import libraries.orm.crud.relationaldatabase.preparedstatement.ORMPreparedStatement;
-import libraries.orm.crud.relationaldatabase.preparedstatement.UpdateStatement;
 import libraries.orm.crud.relationaldatabase.query.InsertQuery;
 import libraries.orm.crud.relationaldatabase.query.UpdateQuery;
 import libraries.orm.orm.Crudable;
@@ -32,8 +29,7 @@ public class RelationalDatabaseCrud extends Crud<Connection> {
         String[] columnNames = createColumnNameList(table);
         try (
                 PreparedStatement statement = dataSource.prepareStatement(
-                        new InsertQuery(table.getTableName().name(), columnNames).toString()
-                )
+                        new InsertQuery(table.getTableName().name(), columnNames).toString())
                 ) {
             new ORMPreparedStatement().setParameters(table, statement);
             return statement.executeUpdate() == 1;

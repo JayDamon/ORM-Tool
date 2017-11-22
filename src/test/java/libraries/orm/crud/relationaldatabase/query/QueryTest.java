@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import pojo.POJOWithAnnotations;
 
 import java.sql.Date;
-import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

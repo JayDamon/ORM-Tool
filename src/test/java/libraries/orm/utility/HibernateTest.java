@@ -42,6 +42,7 @@ public class HibernateTest {
         });
     }
 
+
     @AfterClass
     public static void tearDown() {
         em.clear();

@@ -10,6 +10,6 @@ public class HibernateCRUDTest extends HibernateTest {
 
     @Test
     public  void testGetObjectById_success() {
-
+        //ToDo setup H2 for this https://www.javatips.net/blog/h2-in-memory-database-example
     }
 }

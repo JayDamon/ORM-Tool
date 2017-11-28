@@ -4,6 +4,7 @@ import libraries.orm.orm.Crudable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Map;
 
 public abstract class Crud<T> {
 
@@ -17,7 +18,7 @@ public abstract class Crud<T> {
 
     public abstract boolean create() throws InvocationTargetException, IllegalAccessException;
 
-    public abstract List<?> read();
+    public abstract List<Map<String, Object>> read();
 
     public abstract boolean update() throws InvocationTargetException, IllegalAccessException;
 

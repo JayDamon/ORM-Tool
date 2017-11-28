@@ -8,6 +8,8 @@ import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class ORMPreparedStatement {
     public ORMPreparedStatement() {
@@ -21,14 +23,19 @@ public class ORMPreparedStatement {
 //        return statement;
 //    }
 
-    public void setParameters(Table table, PreparedStatement statement)
+    public void setParameters(LinkedHashMap<String, Object> parameterList, PreparedStatement statement)
             throws SQLException, InvocationTargetException, IllegalAccessException
     {
-        for (int i = 0 ; i < table.getColumnList().size() ; i++) {
-            Column c = table.getColumnList().get(i);
-            Object o = c.getGetterMethod().invoke(table.getCrudable());
-            setParameterBasedOnType(statement, i + 1, o);
+        int i = 1;
+        for (Map.Entry<String, Object> entry : parameterList.entrySet()) {
+            setParameterBasedOnType(statement, i, entry.getValue());
+            i++;
         }
+//        for (int i = 0 ; i < table.getColumnList().size() ; i++) {
+//            Column c = table.getColumnList().get(i);
+//            Object o = c.getGetterMethod().invoke(table.getCrudable());
+//            setParameterBasedOnType(statement, i + 1, o);
+//        }
     }
 
     protected void setParameterBasedOnType(PreparedStatement statement, int i, Object o)

@@ -75,7 +75,6 @@ public class TableTestPOJOWithAnnotations {
             Column c = (Column)var1.next();
             assertNotNull(c.getColumnName());
         }
-
     }
 
     @Test

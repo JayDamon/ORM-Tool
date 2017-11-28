@@ -1,6 +1,7 @@
 import libraries.orm.crud.InsertStatementTestWithCompletePOJO;
 import libraries.orm.orm.TableTest;
 import libraries.orm.orm.TableTestPOJOWithAnnotations;
+import libraries.orm.utility.CRUDTest;
 import libraries.orm.utility.DBConnectionTest;
 import libraries.orm.crud.relationaldatabase.query.QueryTest;
 import org.junit.platform.runner.JUnitPlatform;
@@ -13,6 +14,7 @@ import org.junit.runner.RunWith;
         TableTest.class,
         DBConnectionTest.class,
         QueryTest.class,
-        TableTestPOJOWithAnnotations.class
+        TableTestPOJOWithAnnotations.class,
+        CRUDTest.class
 })
 public class TestSuite {}

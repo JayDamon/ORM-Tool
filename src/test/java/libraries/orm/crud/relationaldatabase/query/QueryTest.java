@@ -7,27 +7,48 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import pojo.POJOWithAnnotations;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Date;
+import java.util.Calendar;
+import java.util.LinkedHashMap;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class QueryTest {
     static private Table table;
     static private String[] columnNames;
+    static private LinkedHashMap<String, Object> columnNamesAndValues;
+    static private LinkedHashMap<String, Object> expectedConditions;
+    static private LinkedHashMap<String, Object> expectedColumnNamesAndValues;
 
     @BeforeAll
-    static void setup() {
+    static void setup() throws InvocationTargetException, IllegalAccessException {
         POJOWithAnnotations pojo = new POJOWithAnnotations();
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2017, Calendar.NOVEMBER, 5);
         pojo.setId(2);
         pojo.setTestString("TestValue");
         pojo.setTestInt(20);
         pojo.setTestDouble(30.0D);
-        pojo.setTestDate(new Date(2017, 11, 5));
+        pojo.setTestDate(new Date(calendar.getTimeInMillis()));
 
         table = new Table(pojo);
         columnNames = new String[table.getColumnNameList().size()];
         columnNames = table.getColumnNameList().toArray(columnNames);
+
+        columnNamesAndValues = table.getColumnAndValueList();
+
+        expectedConditions = new LinkedHashMap<>();
+        expectedConditions.put("id", 2);
+
+        expectedColumnNamesAndValues = new LinkedHashMap<>();
+        expectedColumnNamesAndValues.put("testString", "TestValue");
+        expectedColumnNamesAndValues.put("testInt", 20);
+        expectedColumnNamesAndValues.put("testDouble", 30.0D);
+        expectedColumnNamesAndValues.put("testDate", new Date(calendar.getTimeInMillis()));
     }
 
     @Test
@@ -36,7 +57,7 @@ public class QueryTest {
                 "INSERT INTO testTableName (testString, testInt, testDouble, testDate) VALUES(?, ?, ?, ?)",
                 new InsertQuery(
                         table.getTableName().name(),
-                        columnNames
+                        columnNamesAndValues
                 ).toString()
         );
     }
@@ -49,9 +70,9 @@ public class QueryTest {
                 new UpdateQuery(
                         table.getTableName().name(),
                         new WhereClause(
-                                new String[]{table.getId().idColumnName()}
+                                expectedConditions
                                 ),
-                        columnNames
+                        columnNamesAndValues
                 ).toString()
         );
     }
@@ -91,16 +112,17 @@ public class QueryTest {
     }
 
     @Test
-    public void createSelectQueryWithWhereClause() {
-        String[] args = new String[table.getColumnNameList().size()];
-        args = table.getColumnNameList().toArray(args);
+    public void createSelectQueryWithWhereClause() throws InvocationTargetException, IllegalAccessException {
+        String[] columnList = new String[table.getColumnNameList().size()];
+        columnList = table.getColumnNameList().toArray(columnList);
+        LinkedHashMap<String, Object> args = table.getColumnAndValueList();
         assertEquals(
                 "SELECT testString, testInt, testDouble, testDate FROM testTableName " +
                         "WHERE testString = ? AND testInt = ? AND testDouble = ? AND testDate = ?",
                 new SelectQuery(
                         table.getTableName().name(),
                         new WhereClause(args),
-                        args
+                        columnList
                 ).toString()
         );
     }
@@ -112,31 +134,35 @@ public class QueryTest {
                 new DeleteQuery(
                         table.getTableName().name(),
                         new WhereClause(
-                                new String[]{table.getId().idColumnName()}
+                                expectedConditions
                                 )
                 ).toString()
         );
     }
 
     @Test
-    public void createOrderByClauseSingleCondition() {
+    public void createOrderByClauseSingleCondition() throws InvocationTargetException, IllegalAccessException {
+        LinkedHashMap<String, Object> tableMap = table.getColumnAndValueList();
+        LinkedHashMap<String, Object> parameters = new LinkedHashMap<>();
+        parameters.put("testString", tableMap.get("testString"));
         assertEquals(
                 " ORDER BY testString",
                 new OrderByClause(
-                        new String[]{table.getColumnNameList().get(0)}
+                        parameters
                         ).toString()
         );
     }
 
     @Test
-    public void createOrderByClauseMultipleCondition() {
+    public void createOrderByClauseMultipleCondition() throws InvocationTargetException, IllegalAccessException {
+        LinkedHashMap<String, Object> linkedHashMap = new LinkedHashMap<>();
+        LinkedHashMap<String, Object> newMap = table.getColumnAndValueList(); //ToDo Ensure this is testing the right thing
+        linkedHashMap.put("testString", linkedHashMap.get("testString"));
+        linkedHashMap.put("testInt", linkedHashMap.get("testInt"));
         assertEquals(
                 " ORDER BY testString, testInt",
                 new OrderByClause(
-                        new String[]{
-                                table.getColumnNameList().get(0),
-                                table.getColumnNameList().get(1)
-                        }
+                        linkedHashMap
                 ).toString()
         );
     }
@@ -147,26 +173,31 @@ public class QueryTest {
                 new UpdateQuery(
                         table.getTableName().name(),
                         new WhereClause(
-                                new String[]{table.getId().idColumnName()}
+                                expectedConditions
                         ),
-                        columnNames
+                        columnNamesAndValues
                 ).getWhereClause()
         );
     }
 
     @Test
-    public void whereClauseFirstConditionIsOne() {
-        assertEquals(
-                1,
-                new UpdateQuery(
-                        table.getTableName().name(),
-                        new WhereClause(
-                                new String[]{table.getId().idColumnName()}
-                        ),
-                        columnNames
-                ).getWhereClause()
+    public void whereClauseFirstConditionIsOne() throws InvocationTargetException, IllegalAccessException {
+
+        assertThat(
+                new WhereClause(table.getIDColumnAndValue()).getConditions(),
+                is(expectedConditions)
         );
     }
 
-    //ToDo write test to get parameters from where clause, also add where clause to query
+    @Test
+    public void updateQueryHasProperConditions() throws InvocationTargetException, IllegalAccessException {
+        assertThat(
+                new UpdateQuery(
+                        table.getTableName().name(),
+                        new WhereClause(table.getIDColumnAndValue()),
+                        columnNamesAndValues
+                ).getColumnNameAndValueList(),
+                is(expectedColumnNamesAndValues)
+        );
+    }
 }

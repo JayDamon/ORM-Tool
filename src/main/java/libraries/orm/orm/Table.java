@@ -5,8 +5,9 @@ import libraries.orm.annotations.DataTable;
 import libraries.orm.annotations.ID;
 import libraries.orm.annotations.TableName;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.*;
 
 @DataTable
 public class Table {
@@ -31,7 +32,7 @@ public class Table {
     }
 
     private List<Column> getColumnNameFields() {
-        List<Column> names = new ArrayList();
+        List<Column> names = new ArrayList<>();
         Field[] fields = crudable.getClass().getDeclaredFields();
         boolean idExists = false;
         boolean columnNameExists = false;
@@ -74,6 +75,30 @@ public class Table {
         }
     }
 
+    public List<String> getColumnNameList() {
+        List<String> columnNames = new ArrayList<>();
+        for (Column c : columnList) {
+            columnNames.add(c.getColumnName().name());
+        }
+        return columnNames;
+    }
+
+    public LinkedHashMap<String, Object> getIDColumnAndValue() throws InvocationTargetException, IllegalAccessException {
+        LinkedHashMap<String, Object> idColumnAndValue = new LinkedHashMap<>();
+        Method getID = idColumn.getGetterMethod();
+        idColumnAndValue.put(getId().idColumnName(), getID.invoke(crudable));
+        return idColumnAndValue;
+    }
+
+    public LinkedHashMap<String, Object> getColumnAndValueList() throws InvocationTargetException, IllegalAccessException {
+        LinkedHashMap<String, Object> columnNameAndValueList = new LinkedHashMap<>();
+        for (Column c : columnList) {
+            Method getter = c.getGetterMethod();
+            columnNameAndValueList.put(c.getColumnName().name(), getter.invoke(crudable));
+        }
+        return columnNameAndValueList;
+    }
+
     public TableName getTableName() {
         return this.tableName;
     }
@@ -112,13 +137,5 @@ public class Table {
 
     public void setIdColumn(Column idColumn) {
         this.idColumn = idColumn;
-    }
-
-    public List<String> getColumnNameList() {
-        List<String> columnNames = new ArrayList<>();
-        for (Column c : columnList) {
-            columnNames.add(c.getColumnName().name());
-        }
-        return columnNames;
     }
 }

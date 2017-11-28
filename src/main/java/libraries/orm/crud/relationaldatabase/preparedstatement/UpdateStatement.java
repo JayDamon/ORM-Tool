@@ -27,13 +27,4 @@ public class UpdateStatement extends ORMPreparedStatement {
         return updateQuery.toString();
     }
 
-    @Override
-    public void setParameters(Table table, PreparedStatement statement)
-            throws SQLException, InvocationTargetException,
-            IllegalAccessException
-    {
-        super.setParameters(table, statement);
-        Object o = table.getIdColumn().getGetterMethod().invoke(table.getCrudable());
-        setParameterBasedOnType(statement, table.getColumnList().size() + 1, o);
-    }
 }

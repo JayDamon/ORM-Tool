@@ -10,6 +10,7 @@ import pojo.POJOWithAnnotations;
 import java.sql.Date;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class QueryTest {
     static private Table table;
@@ -139,4 +140,33 @@ public class QueryTest {
                 ).toString()
         );
     }
+
+    @Test
+    public void whereClauseNotNull() {
+        assertNotNull(
+                new UpdateQuery(
+                        table.getTableName().name(),
+                        new WhereClause(
+                                new String[]{table.getId().idColumnName()}
+                        ),
+                        columnNames
+                ).getWhereClause()
+        );
+    }
+
+    @Test
+    public void whereClauseFirstConditionIsOne() {
+        assertEquals(
+                1,
+                new UpdateQuery(
+                        table.getTableName().name(),
+                        new WhereClause(
+                                new String[]{table.getId().idColumnName()}
+                        ),
+                        columnNames
+                ).getWhereClause()
+        );
+    }
+
+    //ToDo write test to get parameters from where clause, also add where clause to query
 }

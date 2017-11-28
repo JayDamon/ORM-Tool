@@ -56,7 +56,8 @@ public class CRUDTest {
         Crud crud = new RelationalDatabaseCrud(pojo, connection);
         assertTrue(crud.create());
 
-        String sql = "SELECT * FROM testTableName WHERE testString = 'TestValue' AND testInt = 20 AND testDouble = 30.0 AND testDate = '2017-11-05'";
+        String sql = "SELECT * FROM testTableName " +
+                "WHERE testString = 'TestValue' AND testInt = 20 AND testDouble = 30.0 AND testDate = '2017-11-05'";
         PreparedStatement statement = connection.prepareStatement(sql);
         ResultSet resultSet = statement.executeQuery();
         assertTrue(resultSet.next());

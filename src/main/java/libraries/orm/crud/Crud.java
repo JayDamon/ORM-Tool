@@ -22,6 +22,6 @@ public abstract class Crud<T> {
 
     public abstract boolean update() throws InvocationTargetException, IllegalAccessException;
 
-    public abstract boolean delete();
+    public abstract boolean delete() throws InvocationTargetException, IllegalAccessException;
 
 }

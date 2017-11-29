@@ -4,10 +4,7 @@ import libraries.orm.crud.Crud;
 import libraries.orm.crud.relationaldatabase.clauses.Clause;
 import libraries.orm.crud.relationaldatabase.clauses.WhereClause;
 import libraries.orm.crud.relationaldatabase.preparedstatement.ORMPreparedStatement;
-import libraries.orm.crud.relationaldatabase.query.InsertQuery;
-import libraries.orm.crud.relationaldatabase.query.Query;
-import libraries.orm.crud.relationaldatabase.query.SelectQuery;
-import libraries.orm.crud.relationaldatabase.query.UpdateQuery;
+import libraries.orm.crud.relationaldatabase.query.*;
 import libraries.orm.orm.Crudable;
 import libraries.orm.orm.Table;
 
@@ -40,7 +37,7 @@ public class RelationalDatabaseCrud extends Crud<Connection> {
     }
 
     @Override
-    public List<Map<String, Object>> read() { //ToDo change type
+    public List<Map<String, Object>> read() {
         List<Map<String, Object>> list = new ArrayList<>();
         Query query = new SelectQuery(
                 table.getTableName().name()
@@ -60,7 +57,6 @@ public class RelationalDatabaseCrud extends Crud<Connection> {
                             rs.getObject(column)
                     );
                 }
-
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -102,8 +98,23 @@ public class RelationalDatabaseCrud extends Crud<Connection> {
     }
 
     @Override
-    public boolean delete() {
-        return false;
+    public boolean delete() throws InvocationTargetException, IllegalAccessException {
+        Query query = new DeleteQuery(
+                table.getTableName().name(),
+                new WhereClause(
+                        table.getIDColumnAndValue()
+                )
+        );
+        LinkedHashMap<String, Object> conditions = getConditionsFromMap(query);
+        try (
+                PreparedStatement statement = dataSource.prepareStatement(query.toString());
+                ) {
+            new ORMPreparedStatement().setParameters(conditions, statement);
+            return statement.executeUpdate() == 1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
 }

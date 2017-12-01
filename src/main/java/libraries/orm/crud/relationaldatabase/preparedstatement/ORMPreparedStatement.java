@@ -1,9 +1,5 @@
 package libraries.orm.crud.relationaldatabase.preparedstatement;
 
-import libraries.orm.orm.Column;
-import libraries.orm.orm.Table;
-
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -15,30 +11,16 @@ public class ORMPreparedStatement {
     public ORMPreparedStatement() {
     }
 
-//    public PreparedStatement createQuery(Connection conn, Table table)
-//            throws SQLException, InvocationTargetException, IllegalAccessException
-//    {
-//        PreparedStatement statement = conn.prepareStatement(this.createQueryString(table));
-//        setParameters(table, statement);
-//        return statement;
-//    }
-
-    public void setParameters(LinkedHashMap<String, Object> parameterList, PreparedStatement statement)
-            throws SQLException, InvocationTargetException, IllegalAccessException
-    {
+    public static void setParameters(LinkedHashMap<String, Object> parameterList, PreparedStatement statement)
+            throws SQLException {
         int i = 1;
         for (Map.Entry<String, Object> entry : parameterList.entrySet()) {
             setParameterBasedOnType(statement, i, entry.getValue());
             i++;
         }
-//        for (int i = 0 ; i < table.getColumnList().size() ; i++) {
-//            Column c = table.getColumnList().get(i);
-//            Object o = c.getGetterMethod().invoke(table.getCrudable());
-//            setParameterBasedOnType(statement, i + 1, o);
-//        }
     }
 
-    protected void setParameterBasedOnType(PreparedStatement statement, int i, Object o)
+    private static void setParameterBasedOnType(PreparedStatement statement, int i, Object o)
             throws SQLException {
         if (o instanceof Integer) {
             setStatementParameter(statement, i, (int)o);
@@ -63,54 +45,52 @@ public class ORMPreparedStatement {
         }
     }
 
-//    abstract String createQueryString(Table table);
-
-    private void setStatementParameter(PreparedStatement stmt, int parameterIndex, int value)
+    private static void setStatementParameter(PreparedStatement stmt, int parameterIndex, int value)
             throws SQLException {
         stmt.setInt(parameterIndex, value);
     }
 
-    private void setStatementParameter(PreparedStatement stmt, int parameterIndex, String value)
+    private static void setStatementParameter(PreparedStatement stmt, int parameterIndex, String value)
             throws SQLException {
         stmt.setString(parameterIndex, value);
     }
 
-    private void setStatementParameter(PreparedStatement stmt, int parameterIndex, short value)
+    private static void setStatementParameter(PreparedStatement stmt, int parameterIndex, short value)
             throws SQLException {
         stmt.setShort(parameterIndex, value);
     }
 
-    private void setStatementParameter(PreparedStatement stmt, int parameterIndex, BigDecimal value)
+    private static void setStatementParameter(PreparedStatement stmt, int parameterIndex, BigDecimal value)
             throws SQLException {
         stmt.setBigDecimal(parameterIndex, value);
     }
 
-    private void setStatementParameter(PreparedStatement stmt, int parameterIndex, byte value)
+    private static void setStatementParameter(PreparedStatement stmt, int parameterIndex, byte value)
             throws SQLException {
         stmt.setByte(parameterIndex, value);
     }
 
-    private void setStatementParameter(PreparedStatement stmt, int parameterIndex, boolean value)
+    private static void setStatementParameter(PreparedStatement stmt, int parameterIndex, boolean value)
             throws SQLException {
         stmt.setBoolean(parameterIndex, value);
     }
 
-    private void setStatementParameter(PreparedStatement stmt, int parameterIndex, long value)
+    private static void setStatementParameter(PreparedStatement stmt, int parameterIndex, long value)
             throws SQLException {
         stmt.setLong(parameterIndex, value);
     }
 
-    private void setStatementParameter(PreparedStatement stmt, int parameterIndex, float value)
+    private static void setStatementParameter(PreparedStatement stmt, int parameterIndex, float value)
             throws SQLException {
         stmt.setFloat(parameterIndex, value);
     }
 
-    private void setStatementParameter(PreparedStatement stmt, int parameterIndex, double value)
+    private static void setStatementParameter(PreparedStatement stmt, int parameterIndex, double value)
             throws SQLException {
         stmt.setDouble(parameterIndex, value);
     }
 
-    private void setStatementParameter(PreparedStatement stmt, int parameterIndex, Date value)
+    private static void setStatementParameter(PreparedStatement stmt, int parameterIndex, Date value)
             throws SQLException {
         stmt.setDate(parameterIndex, value);
     }

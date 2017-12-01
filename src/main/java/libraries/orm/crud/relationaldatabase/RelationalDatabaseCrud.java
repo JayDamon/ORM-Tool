@@ -25,15 +25,7 @@ public class RelationalDatabaseCrud extends Crud<Connection> {
     public boolean create() throws InvocationTargetException, IllegalAccessException {
         Query query = new InsertQuery(table.getTableName().name(), table.getColumnAndValueList());
         LinkedHashMap<String, Object> conditionsAndValueList = getConditionsFromMap(query);
-        try (
-                PreparedStatement statement = dataSource.prepareStatement(query.toString())
-                ) {
-            new ORMPreparedStatement().setParameters(conditionsAndValueList, statement);
-            return statement.executeUpdate() == 1;
-        } catch (SQLException e) {
-            e.iterator();
-            return false;
-        }
+        return executeUpdateQuery(query, conditionsAndValueList);
     }
 
     @Override
@@ -74,27 +66,7 @@ public class RelationalDatabaseCrud extends Crud<Connection> {
                 table.getColumnAndValueList()
         );
         LinkedHashMap<String, Object> conditionsAndValueList = getConditionsFromMap(query);
-        try (
-                PreparedStatement statement = dataSource.prepareStatement(
-                        query.toString()
-                )
-                ) {
-            new ORMPreparedStatement().setParameters(conditionsAndValueList, statement);
-            return statement.executeUpdate() == 1;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    private LinkedHashMap<String, Object> getConditionsFromMap(Query query) {
-        LinkedHashMap<String, Object> conditionsAndValueList = new LinkedHashMap<>();
-        conditionsAndValueList.putAll(query.getColumnNameAndValueList());
-        Clause whereClause = query.getWhereClause();
-        if (whereClause != null && whereClause.getConditions() != null) {
-            conditionsAndValueList.putAll(whereClause.getConditions());
-        }
-        return conditionsAndValueList;
+        return executeUpdateQuery(query, conditionsAndValueList);
     }
 
     @Override
@@ -106,10 +78,23 @@ public class RelationalDatabaseCrud extends Crud<Connection> {
                 )
         );
         LinkedHashMap<String, Object> conditions = getConditionsFromMap(query);
+        return executeUpdateQuery(query, conditions);
+    }
+
+    private LinkedHashMap<String, Object> getConditionsFromMap(Query query) {
+        LinkedHashMap<String, Object> conditionsAndValueList = new LinkedHashMap<>(query.getColumnNameAndValueList());
+        Clause whereClause = query.getWhereClause();
+        if (whereClause != null && whereClause.getConditions() != null) {
+            conditionsAndValueList.putAll(whereClause.getConditions());
+        }
+        return conditionsAndValueList;
+    }
+
+    private boolean executeUpdateQuery(Query query, LinkedHashMap<String, Object> conditionsAndValueList) {
         try (
-                PreparedStatement statement = dataSource.prepareStatement(query.toString());
-                ) {
-            new ORMPreparedStatement().setParameters(conditions, statement);
+                PreparedStatement statement = dataSource.prepareStatement(query.toString())
+        ) {
+            ORMPreparedStatement.setParameters(conditionsAndValueList, statement);
             return statement.executeUpdate() == 1;
         } catch (SQLException e) {
             e.printStackTrace();

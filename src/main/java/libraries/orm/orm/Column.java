@@ -40,7 +40,6 @@ public class Column {
         } else {
             method = "get" + fieldName;
         }
-
         return object.getClass().getMethod(method);
     }
 }

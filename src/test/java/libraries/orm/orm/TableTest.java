@@ -28,15 +28,8 @@ public class TableTest {
 
     @BeforeAll
     public static void setup() {
-        POJOWithAnnotations pojo = new POJOWithAnnotations();
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(2017, 11, 5);
+        POJOWithAnnotations pojo = POJOWithData.getPojoWithAnnotationsPrimary();
         pojo.setId(2);
-        pojo.setTestString("TestValue");
-        pojo.setTestInt(20);
-        pojo.setTestDouble(30.0D);
-        pojo.setTestDate(new Date(calendar.getTimeInMillis()));
 
         conditions = new HashMap<>();
         conditions.put("id", 2);
@@ -45,7 +38,7 @@ public class TableTest {
         columnValues.put("testString","TestValue");
         columnValues.put("testInt",20);
         columnValues.put("testDouble",30.0D);
-        columnValues.put("testDate",new Date(calendar.getTimeInMillis()));
+        columnValues.put("testDate",pojo.getTestDate());
 
         table = new Table(pojo);
     }

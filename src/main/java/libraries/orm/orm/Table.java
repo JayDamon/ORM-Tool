@@ -19,11 +19,11 @@ public class Table {
 
     public Table(Crudable crudable) {
         this.setCrudable(crudable);
-        this.setTableName(this.getTableNameFromObject());
-        this.setColumnList(this.getColumnNameFields());
+        this.setTableName(getTableNameFromObject(crudable));
+        this.setColumnList(getColumnNameFields(crudable));
     }
 
-    private TableName getTableNameFromObject() {
+    private static TableName getTableNameFromObject(Crudable crudable) {
         if (crudable.getClass().isAnnotationPresent(TableName.class)) {
             return crudable.getClass().getAnnotation(TableName.class);
         } else {
@@ -31,7 +31,7 @@ public class Table {
         }
     }
 
-    private List<Column> getColumnNameFields() {
+    private List<Column> getColumnNameFields(Crudable crudable) {
         List<Column> names = new ArrayList<>();
         Field[] fields = crudable.getClass().getDeclaredFields();
         boolean idExists = false;
@@ -39,11 +39,11 @@ public class Table {
 
         for (Field f : fields) {
             if (f.isAnnotationPresent(ColumnName.class)) {
-                this.addColumn(names, crudable, f);
+                addColumnToList(names, crudable, f);
                 columnNameExists = true;
             } else if (f.isAnnotationPresent(ID.class)) {
-                this.setId(f.getAnnotation(ID.class));
-                this.setIdColumn(createColumn(f));
+                this.id = f.getAnnotation(ID.class);
+                this.idColumn = createColumnFromField(crudable, f);
                 idExists = true;
             }
         }
@@ -59,7 +59,7 @@ public class Table {
         }
     }
 
-    private void addColumn(List<Column> names, Crudable c, Field f) {
+    private static void addColumnToList(List<Column> names, Crudable c, Field f) {
         try {
             names.add(new Column(c, f));
         } catch (NoSuchMethodException var5) {
@@ -67,7 +67,7 @@ public class Table {
         }
     }
 
-    private Column createColumn(Field field) {
+    private static Column createColumnFromField(Crudable crudable, Field field) {
         try {
             return new Column(crudable, field);
         } catch (NoSuchMethodException var5) {

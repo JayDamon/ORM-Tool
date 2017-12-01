@@ -18,10 +18,6 @@ public class OrderByClause extends Clause {
             sql.append(entry.getKey());
             i++;
         }
-//        for (int i = 0; i < conditionColumns.length; i++) {
-//            if (i != 0) sql.append(", ");
-//            sql.append(conditionColumns[i]);
-//        }
         return sql.toString();
     }
 }

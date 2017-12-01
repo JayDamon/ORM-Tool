@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import pojo.POJOWithAnnotations;
+import pojo.POJOWithData;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.*;
@@ -53,12 +54,7 @@ public class CRUDTest {
         Calendar pojoWithCal = Calendar.getInstance();
         pojoWithCal.set(2017, Calendar.NOVEMBER, 5);
 
-        pojo = new POJOWithAnnotations();
-        pojo.setId(1);
-        pojo.setTestString("TestValue");
-        pojo.setTestInt(20);
-        pojo.setTestDouble(30.0D);
-        pojo.setTestDate(new Date(pojoWithCal.getTimeInMillis()));
+        pojo = POJOWithData.getPojoWithAnnotationsPrimary();
     }
 
     @BeforeEach

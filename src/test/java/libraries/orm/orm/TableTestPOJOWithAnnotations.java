@@ -1,12 +1,11 @@
 package libraries.orm.orm;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import pojo.POJOWithAnnotations;
+import pojo.POJOWithData;
 
 import java.lang.reflect.InvocationTargetException;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -25,12 +24,7 @@ public class TableTestPOJOWithAnnotations {
 
     @BeforeAll
     static void setup() {
-        pojo = new POJOWithAnnotations();
-        pojo.setId(1);
-        pojo.setTestString("TestValue");
-        pojo.setTestInt(20);
-        pojo.setTestDouble(30.0D);
-        pojo.setTestDate(new Date(2017, 11, 5));
+        pojo = POJOWithData.getPojoWithAnnotationsPrimary();
 
         columnList = new ArrayList<>();
         columnList.add("testString");

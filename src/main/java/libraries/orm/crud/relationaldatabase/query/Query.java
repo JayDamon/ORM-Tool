@@ -23,14 +23,15 @@ public abstract class Query {
 
     public Query(String tableName, WhereClause whereClause, String... columnNames) {
         populateConditionsAndValues(columnNames);
-        this.queryBuilder = writeQuery(tableName, columnNameAndValueList);
-        this.whereClause = whereClause;
-        queryBuilder.append(whereClause.toString());
-        this.query = queryBuilder.toString();
+        setQueryDetails(tableName, whereClause, columnNameAndValueList);
     }
 
     public Query(String tableName, WhereClause whereClause, LinkedHashMap<String, Object> columnNameAndValueList) {
         this.columnNameAndValueList = columnNameAndValueList;
+        setQueryDetails(tableName, whereClause, columnNameAndValueList);
+    }
+
+    private void setQueryDetails(String tableName, WhereClause whereClause, LinkedHashMap<String, Object> columnNameAndValueList) {
         this.queryBuilder = writeQuery(tableName, columnNameAndValueList);
         this.whereClause = whereClause;
         queryBuilder.append(whereClause.toString());

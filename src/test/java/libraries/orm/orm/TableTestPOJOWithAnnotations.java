@@ -35,7 +35,6 @@ public class TableTestPOJOWithAnnotations {
         table = new Table(pojo);
     }
 
-
     @Test
     void tableReturnsListOfColumnNameStrings() {
         assertThat(table.getColumnNameList(), is(columnList));

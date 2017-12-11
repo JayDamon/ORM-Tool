@@ -2,6 +2,7 @@ package libraries.orm.utility;
 
 import libraries.orm.crud.Crud;
 import libraries.orm.crud.relationaldatabase.RelationalDatabaseCrud;
+import libraries.orm.crud.relationaldatabase.exceptions.QueryException;
 import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsEmptyCollection;
 import org.junit.jupiter.api.AfterAll;
@@ -26,6 +27,7 @@ public class CRUDTest {
     static List<Map<String, Object>> expectedList;
     static Map<String, Object> expectedSelect;
     static POJOWithAnnotations pojoForEntryOne;
+    static POJOWithAnnotations pojoNotExisting;
 
     @BeforeAll
     public static void setup() {
@@ -39,6 +41,15 @@ public class CRUDTest {
         Calendar calendar = Calendar.getInstance();
         calendar.set(2017, Calendar.MAY, 20);
         pojoForEntryOne.setTestDate(new Date(calendar.getTimeInMillis()));
+
+        pojoNotExisting = new POJOWithAnnotations();
+        pojoNotExisting.setId(1);
+        pojoNotExisting.setTestString("Test");
+        pojoNotExisting.setTestInt(5);
+        pojoNotExisting.setTestDouble(5.22);
+        Calendar calendar1 = Calendar.getInstance();
+        calendar1.set(2017, Calendar.MAY, 20);
+        pojoNotExisting.setTestDate(new Date(calendar1.getTimeInMillis()));
 
         expectedSelect = new HashMap<>();
         expectedSelect.put("ID", 1);
@@ -58,7 +69,7 @@ public class CRUDTest {
     }
 
     @BeforeEach
-    public void setUp() throws SQLException {
+    public void setUp() {
         CreateTestDatabaseTable.createDatabaseTable(connection);
     }
 
@@ -96,6 +107,33 @@ public class CRUDTest {
     }
 
     @Test
+    public void selectQueryReturnsSingleResultWithConditions() {
+        LinkedHashMap<String, Object> conditions = new LinkedHashMap<>();
+        conditions.put("testString", "Test");
+        conditions.put("testInt", 5);
+        conditions.put("testDouble", 5.22);
+        Crud<Connection> crud = new RelationalDatabaseCrud(pojoForEntryOne, connection);
+        List<Map<String, Object>> actualList = crud.read(conditions);
+        assertThat(actualList, Matchers.not(IsEmptyCollection.empty()));
+        assertThat(actualList, hasSize(1));
+    }
+
+    @Test
+    public void selectQueryReturnsSingleResultWithConditionsAndColumns() {
+        LinkedHashMap<String, Object> conditions = new LinkedHashMap<>();
+        conditions.put("testString", "Test");
+        conditions.put("testInt", 5);
+        conditions.put("testDouble", 5.22);
+        Crud<Connection> crud = new RelationalDatabaseCrud(pojoForEntryOne, connection);
+        List<Map<String, Object>> actualList = crud.read(conditions, "testString", "testInt");
+        assertThat(actualList, Matchers.not(IsEmptyCollection.empty()));
+        assertThat(actualList, hasSize(1));
+        assertTrue(actualList.get(0).containsKey("TESTSTRING"));
+        assertTrue(actualList.get(0).containsKey("TESTINT"));
+        assertFalse(actualList.get(0).containsKey("TESTDATE"));
+    }
+
+    @Test
     public void deleteQueryRemovesItem() throws SQLException, InvocationTargetException, IllegalAccessException {
         Crud<Connection> crud = new RelationalDatabaseCrud(pojoForEntryOne, connection);
         assertTrue(crud.delete());
@@ -106,6 +144,22 @@ public class CRUDTest {
         PreparedStatement statement = connection.prepareStatement(sql);
         ResultSet resultSet = statement.executeQuery();
         assertFalse(resultSet.next());
+    }
+
+    @Test
+    public void pojoExistrsInDatabase() throws InvocationTargetException, IllegalAccessException {
+        Crud crud = new RelationalDatabaseCrud(pojoForEntryOne, connection);
+        assertTrue(crud.exists());
+    }
+
+    @Test
+    public void pojoExistrsInDatabaseWithConditions() throws InvocationTargetException, IllegalAccessException {
+        LinkedHashMap<String, Object> conditions = new LinkedHashMap<>();
+        conditions.put("testString", "Test");
+        conditions.put("testInt", 5);
+        conditions.put("testDouble", 5.22);
+        Crud crud = new RelationalDatabaseCrud(pojoForEntryOne, connection);
+        assertTrue(crud.exists(conditions));
     }
 
     @AfterAll

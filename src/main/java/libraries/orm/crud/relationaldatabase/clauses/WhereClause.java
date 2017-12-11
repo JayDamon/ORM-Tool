@@ -5,8 +5,8 @@ import java.util.Map;
 
 public class WhereClause extends Clause {
 
-    public WhereClause(LinkedHashMap<String, Object> conditionColumnAndValues) {
-        super(conditionColumnAndValues);
+    public WhereClause(LinkedHashMap<String, Object> conditions) {
+        super(conditions);
     }
 
     protected String writeClause(LinkedHashMap<String, Object> conditions) {

@@ -3,6 +3,7 @@ package libraries.orm.crud.relationaldatabase;
 import libraries.orm.crud.Crud;
 import libraries.orm.crud.relationaldatabase.clauses.Clause;
 import libraries.orm.crud.relationaldatabase.clauses.WhereClause;
+import libraries.orm.crud.relationaldatabase.exceptions.QueryException;
 import libraries.orm.crud.relationaldatabase.preparedstatement.ORMPreparedStatement;
 import libraries.orm.crud.relationaldatabase.query.*;
 import libraries.orm.orm.Crudable;
@@ -24,34 +25,79 @@ public class RelationalDatabaseCrud extends Crud<Connection> {
     @Override
     public boolean create() throws InvocationTargetException, IllegalAccessException {
         Query query = new InsertQuery(table.getTableName().name(), table.getColumnAndValueList());
-        LinkedHashMap<String, Object> conditionsAndValueList = getConditionsFromMap(query);
-        return executeUpdateQuery(query, conditionsAndValueList);
+        LinkedHashMap<String, Object> conditions = getConditionsFromMap(query);
+        return executeUpdateQuery(query, conditions);
     }
 
     @Override
     public List<Map<String, Object>> read() {
-        List<Map<String, Object>> list = new ArrayList<>();
         Query query = new SelectQuery(
                 table.getTableName().name()
         );
-        try (
-                PreparedStatement statement = dataSource.prepareStatement(query.toString());
-                ResultSet rs = statement.executeQuery();
-                ) {
-            ResultSetMetaData metaData = rs.getMetaData();
+        return executeSelectQuery(query, dataSource);
+    }
+
+    @Override
+    public List<Map<String, Object>> read(LinkedHashMap<String, Object> conditions) {
+        Query query = new SelectQuery(
+                table.getTableName().name(),
+                new WhereClause(conditions)
+        );
+        return executeSelectQuery(query, dataSource);
+    }
+
+    @Override
+    public List<Map<String, Object>> read(LinkedHashMap<String, Object> conditions, String... columnNames) {
+        Query query = new SelectQuery(
+                table.getTableName().name(),
+                new WhereClause(conditions),
+                columnNames
+        );
+        return executeSelectQuery(query, dataSource);
+    }
+
+    private static List<Map<String, Object>> executeSelectQuery(Query query, Connection connection) {
+        List<Map<String, Object>> list = new ArrayList<>();
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        ArrayList<SQLException> exceptions = new ArrayList<>();
+        LinkedHashMap<String, Object> conditions = getConditionsFromMap(query);
+        try {
+            statement = connection.prepareStatement(query.toString());
+            if (conditions != null) ORMPreparedStatement.setParameters(conditions, statement);
+            resultSet = statement.executeQuery();
+            ResultSetMetaData metaData = resultSet.getMetaData();
             int columnCount = metaData.getColumnCount();
-            while (rs.next()) {
+            while (resultSet.next()) {
                 Map<String, Object> columnList = new HashMap<>();
                 list.add(columnList);
                 for (int column = 1; column <= columnCount; column++) {
                     columnList.put(
                             metaData.getColumnName(column),
-                            rs.getObject(column)
+                            resultSet.getObject(column)
                     );
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            exceptions.add(e);
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (SQLException e) {
+                exceptions.add(e);
+            }
+            try {
+                if (statement != null) {
+                    statement.close();
+                }
+            } catch (SQLException e) {
+                exceptions.add(e);
+            }
+            if (exceptions.size() != 0) {
+                //ToDo log exceptions
+            }
         }
         return list;
     }
@@ -81,20 +127,77 @@ public class RelationalDatabaseCrud extends Crud<Connection> {
         return executeUpdateQuery(query, conditions);
     }
 
-    private LinkedHashMap<String, Object> getConditionsFromMap(Query query) {
-        LinkedHashMap<String, Object> conditionsAndValueList = new LinkedHashMap<>(query.getColumnNameAndValueList());
-        Clause whereClause = query.getWhereClause();
-        if (whereClause != null && whereClause.getConditions() != null) {
-            conditionsAndValueList.putAll(whereClause.getConditions());
-        }
-        return conditionsAndValueList;
+    @Override
+    public boolean exists(LinkedHashMap<String, Object> conditions) {
+        Query query = new SelectQuery(
+                table.getTableName().name(),
+                new WhereClause(
+                        conditions
+                )
+        );
+        return exists(query);
     }
 
-    private boolean executeUpdateQuery(Query query, LinkedHashMap<String, Object> conditionsAndValueList) {
+    @Override
+    public boolean exists() throws InvocationTargetException, IllegalAccessException {
+        Query query = new SelectQuery(
+                table.getTableName().name(),
+                new WhereClause(
+                        table.getIDColumnAndValue()
+                )
+        );
+        return exists(query);
+    }
+
+    private boolean exists(Query query) {
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        ArrayList<SQLException> exceptions = new ArrayList<>();
+        LinkedHashMap<String, Object> conditions = getConditionsFromMap(query);
+        boolean exists = false;
+        try {
+            statement = dataSource.prepareStatement(query.toString());
+            ORMPreparedStatement.setParameters(conditions, statement);
+            resultSet = statement.executeQuery();
+            exists = resultSet.next();
+        } catch (SQLException e) {
+            exceptions.add(e);
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (SQLException e) {
+                exceptions.add(e);
+            }
+            try {
+                if (statement != null) {
+                    statement.close();
+                }
+            } catch (SQLException e) {
+                exceptions.add(e);
+            }
+            if (exceptions.size() != 0) {
+                //ToDo log exceptions
+            }
+        }
+        return exists;
+    }
+
+    private static LinkedHashMap<String, Object> getConditionsFromMap(Query query) {
+        LinkedHashMap<String, Object> conditions = new LinkedHashMap<>(query.getColumnNameAndValueList());
+        Clause whereClause = query.getWhereClause();
+        if (whereClause != null && whereClause.getConditions() != null) {
+            conditions.putAll(whereClause.getConditions());
+        }
+        return conditions;
+    }
+
+    private boolean executeUpdateQuery(Query query, LinkedHashMap<String, Object> conditions) {
         try (
                 PreparedStatement statement = dataSource.prepareStatement(query.toString())
         ) {
-            ORMPreparedStatement.setParameters(conditionsAndValueList, statement);
+            ORMPreparedStatement.setParameters(conditions, statement);
             return statement.executeUpdate() == 1;
         } catch (SQLException e) {
             e.printStackTrace();

@@ -3,7 +3,6 @@ package libraries.orm.utility;
 import libraries.orm.crud.Condition;
 import libraries.orm.crud.Crud;
 import libraries.orm.crud.relationaldatabase.RelationalDatabaseCrud;
-import libraries.orm.crud.relationaldatabase.exceptions.QueryException;
 import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsEmptyCollection;
 import org.junit.jupiter.api.AfterAll;
@@ -15,8 +14,9 @@ import pojo.POJOWithData;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.*;
-import java.sql.Date;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.*;
@@ -120,7 +120,7 @@ public class CRUDTest {
 
         String sql = "SELECT * FROM testTableName " +
                 "WHERE id = 2 AND testString = 'Test3' " +
-                "AND testInt = 53 AND testDouble = 53.33 AND testDate = '2017-5-33'";
+                "AND testInt = 53 AND testDouble = 53.33";
         PreparedStatement statement = connection.prepareStatement(sql);
         ResultSet resultSet = statement.executeQuery();
         assertTrue(resultSet.next());
@@ -128,10 +128,10 @@ public class CRUDTest {
 
     @Test
     public void selectQueryReturnsSingleResult() {
-        Crud<Connection> crud = new RelationalDatabaseCrud(pojoForEntryOne, connection);
+        Crud crud = new RelationalDatabaseCrud(pojoForEntryOne, connection);
         List<ArrayList<Condition>> actualList = crud.read();
         assertThat(actualList, Matchers.not(IsEmptyCollection.empty()));
-        assertThat(actualList, hasSize(1));
+        assertThat(actualList, hasSize(2));
     }
 
     @Test
@@ -156,9 +156,8 @@ public class CRUDTest {
         List<ArrayList<Condition>> actualList = crud.read(conditions, "testString", "testInt");
         assertThat(actualList, Matchers.not(IsEmptyCollection.empty()));
         assertThat(actualList, hasSize(1));
-        assertTrue(conditions.stream().anyMatch(p -> p.getColumnName().equals("TESTSTRING")));
-        assertTrue(conditions.stream().anyMatch(p -> p.getColumnName().equals("TESTINT")));
-        assertFalse(conditions.stream().anyMatch(p -> p.getColumnName().equals("TESTINT")));
+        assertTrue(actualList.get(0).stream().anyMatch(p -> p.getColumnName().equals("TESTSTRING")));
+        assertTrue(actualList.get(0).stream().anyMatch(p -> p.getColumnName().equals("TESTINT")));
     }
 
     @Test

@@ -4,7 +4,6 @@ import libraries.orm.crud.Condition;
 import libraries.orm.crud.Crud;
 import libraries.orm.crud.relationaldatabase.clauses.Clause;
 import libraries.orm.crud.relationaldatabase.clauses.WhereClause;
-import libraries.orm.crud.relationaldatabase.exceptions.QueryException;
 import libraries.orm.crud.relationaldatabase.preparedstatement.ORMPreparedStatement;
 import libraries.orm.crud.relationaldatabase.query.*;
 import libraries.orm.orm.Crudable;
@@ -12,7 +11,8 @@ import libraries.orm.orm.Table;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RelationalDatabaseCrud extends Crud<Connection> {
 
@@ -62,10 +62,14 @@ public class RelationalDatabaseCrud extends Crud<Connection> {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         ArrayList<SQLException> exceptions = new ArrayList<>();
-        ArrayList<Condition> conditions = getConditionsFromMap(query);
+        ArrayList<Condition> conditions = new ArrayList<>();
+        WhereClause clause = query.getWhereClause();
+        if (clause != null && clause.getConditions() != null) {
+            conditions.addAll(clause.getConditions());
+        }
         try {
             statement = connection.prepareStatement(query.toString());
-            if (conditions != null) ORMPreparedStatement.setParameters(conditions, statement);
+            if (conditions.size() > 0) ORMPreparedStatement.setParameters(conditions, statement);
             resultSet = statement.executeQuery();
             ResultSetMetaData metaData = resultSet.getMetaData();
             int columnCount = metaData.getColumnCount();
@@ -168,7 +172,11 @@ public class RelationalDatabaseCrud extends Crud<Connection> {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         ArrayList<SQLException> exceptions = new ArrayList<>();
-        ArrayList<Condition> conditions = getConditionsFromMap(query);
+        ArrayList<Condition> conditions = new ArrayList<>();
+        WhereClause clause = query.getWhereClause();
+        if (clause != null && clause.getConditions() != null) {
+            conditions.addAll(clause.getConditions());
+        }
         boolean exists = false;
         try {
             statement = dataSource.prepareStatement(query.toString());

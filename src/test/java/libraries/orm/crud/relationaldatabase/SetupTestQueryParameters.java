@@ -8,7 +8,6 @@ import pojo.POJOWithData;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
 public class SetupTestQueryParameters {
     protected static Table table;

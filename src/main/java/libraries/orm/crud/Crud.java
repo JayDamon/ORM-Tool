@@ -1,14 +1,10 @@
 package libraries.orm.crud;
 
-import libraries.orm.crud.relationaldatabase.exceptions.QueryException;
 import libraries.orm.orm.Crudable;
 
 import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 public abstract class Crud<T> {
 

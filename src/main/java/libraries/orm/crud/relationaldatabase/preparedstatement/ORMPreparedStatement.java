@@ -17,7 +17,7 @@ public class ORMPreparedStatement {
     public static void setParameters(ArrayList<Condition> parameterList, PreparedStatement statement)
             throws SQLException {
         for (int i = 0; i < parameterList.size(); i++) {
-            setParameterBasedOnType(statement, i, parameterList.get(i).getCondition());
+            setParameterBasedOnType(statement, i + 1, parameterList.get(i).getCondition());
         }
 //        int i = 1;
 //        for (Map.Entry<String, Object> entry : parameterList.entrySet()) {

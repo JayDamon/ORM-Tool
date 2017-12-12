@@ -1,10 +1,12 @@
 package libraries.orm.crud.relationaldatabase.query;
 
+import libraries.orm.crud.Condition;
 import libraries.orm.crud.relationaldatabase.SetupTestQueryParameters;
 import libraries.orm.crud.relationaldatabase.clauses.WhereClause;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -43,13 +45,17 @@ public class UpdateQueryTest extends SetupTestQueryParameters {
 
     @Test
     public void udpateQueryCreatedWithWhereClauseHasExpectedColumns() throws InvocationTargetException, IllegalAccessException {
-        assertThat(
-                new UpdateQuery(
-                        table.getTableName().name(),
-                        new WhereClause(table.getIDColumnAndValue()),
-                        columnNamesAndValues
-                ).getColumnNameAndValueList(),
-                is(expectedColumnNamesAndValues)
-        );
+        ArrayList<Condition> list =  new UpdateQuery(
+                table.getTableName().name(),
+                new WhereClause(table.getIDColumnAndValue()),
+                columnNamesAndValues).getColumnNameAndValueList();
+        assertEquals(list.get(0).getCondition(),expectedColumnNamesAndValues.get(0).getCondition());
+        assertEquals(list.get(0).getColumnName(),expectedColumnNamesAndValues.get(0).getColumnName());
+        assertEquals(list.get(1).getCondition(),expectedColumnNamesAndValues.get(1).getCondition());
+        assertEquals(list.get(1).getColumnName(),expectedColumnNamesAndValues.get(1).getColumnName());
+        assertEquals(list.get(2).getCondition(),expectedColumnNamesAndValues.get(2).getCondition());
+        assertEquals(list.get(2).getColumnName(),expectedColumnNamesAndValues.get(2).getColumnName());
+        assertEquals(list.get(3).getCondition(),expectedColumnNamesAndValues.get(3).getCondition());
+        assertEquals(list.get(3).getColumnName(),expectedColumnNamesAndValues.get(3).getColumnName());
     }
 }

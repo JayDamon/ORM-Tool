@@ -1,26 +1,20 @@
 package libraries.orm.orm;
 
 import libraries.orm.annotations.DataTable;
-
 import libraries.orm.crud.Condition;
-import libraries.orm.crud.relationaldatabase.clauses.Clause;
-import libraries.orm.crud.relationaldatabase.clauses.WhereClause;
+import org.hamcrest.Matchers;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import pojo.*;
 
 import java.lang.reflect.InvocationTargetException;
-import java.sql.Date;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TableTest {
 
@@ -94,11 +88,19 @@ public class TableTest {
 
     @Test
     public void conditionsAreCorrect() throws InvocationTargetException, IllegalAccessException {
-        Assert.assertThat(table.getIDColumnAndValue(), is(conditions));
+        Assert.assertEquals(conditions.get(0).getCondition(), table.getIDColumnAndValue().get(0).getCondition());
+        Assert.assertEquals(conditions.get(0).getColumnName(), table.getIDColumnAndValue().get(0).getColumnName());
     }
 
     @Test
     public void columnValuesAreCorrect() throws InvocationTargetException, IllegalAccessException {
-        Assert.assertThat(table.getColumnAndValueList(), is(columnValues));
+        Assert.assertEquals(columnValues.get(0).getCondition(), table.getColumnAndValueList().get(0).getCondition());
+        Assert.assertEquals(columnValues.get(0).getColumnName(), table.getColumnAndValueList().get(0).getColumnName());
+        Assert.assertEquals(columnValues.get(1).getCondition(), table.getColumnAndValueList().get(1).getCondition());
+        Assert.assertEquals(columnValues.get(1).getColumnName(), table.getColumnAndValueList().get(1).getColumnName());
+        Assert.assertEquals(columnValues.get(2).getCondition(), table.getColumnAndValueList().get(2).getCondition());
+        Assert.assertEquals(columnValues.get(2).getColumnName(), table.getColumnAndValueList().get(2).getColumnName());
+        Assert.assertEquals(columnValues.get(3).getCondition(), table.getColumnAndValueList().get(3).getCondition());
+        Assert.assertEquals(columnValues.get(3).getColumnName(), table.getColumnAndValueList().get(3).getColumnName());
     }
 }

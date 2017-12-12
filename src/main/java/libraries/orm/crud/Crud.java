@@ -5,6 +5,7 @@ import libraries.orm.orm.Crudable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,17 +22,19 @@ public abstract class Crud<T> {
 
     public abstract boolean create() throws InvocationTargetException, IllegalAccessException;
 
-    public abstract List<Map<String, Object>> read();
+    public abstract List<ArrayList<Condition>> read();
 
-    public abstract List<Map<String, Object>> read(LinkedHashMap<String, Object> conditions);
+    public abstract List<ArrayList<Condition>> read(ArrayList<Condition> conditions);
 
-    public abstract List<Map<String, Object>> read(LinkedHashMap<String, Object> conditions, String... columnNames);
+    public abstract List<ArrayList<Condition>> read(ArrayList<Condition> conditions, String... columnNames);
 
     public abstract boolean update() throws InvocationTargetException, IllegalAccessException;
 
+    public abstract boolean update(ArrayList<Condition> conditions) throws InvocationTargetException, IllegalAccessException;
+
     public abstract boolean delete() throws InvocationTargetException, IllegalAccessException;
 
-    public abstract boolean exists(LinkedHashMap<String, Object> conditions);
+    public abstract boolean exists(ArrayList<Condition> conditions);
 
     public abstract boolean exists() throws InvocationTargetException, IllegalAccessException;
 

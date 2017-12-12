@@ -1,5 +1,6 @@
 package libraries.orm.utility;
 
+import libraries.orm.crud.Condition;
 import libraries.orm.crud.Crud;
 import libraries.orm.crud.relationaldatabase.RelationalDatabaseCrud;
 import libraries.orm.crud.relationaldatabase.exceptions.QueryException;
@@ -24,10 +25,11 @@ public class CRUDTest {
 
     static Connection connection;
     private static POJOWithAnnotations pojo;
-    static List<Map<String, Object>> expectedList;
-    static Map<String, Object> expectedSelect;
+    static List<ArrayList<Condition>> expectedList;
+    static ArrayList<Condition> expectedSelect;
     static POJOWithAnnotations pojoForEntryOne;
     static POJOWithAnnotations pojoNotExisting;
+    static POJOWithAnnotations pojoForEntryTwo;
 
     @BeforeAll
     public static void setup() {
@@ -42,6 +44,15 @@ public class CRUDTest {
         calendar.set(2017, Calendar.MAY, 20);
         pojoForEntryOne.setTestDate(new Date(calendar.getTimeInMillis()));
 
+        pojoForEntryTwo = new POJOWithAnnotations();
+        pojoForEntryTwo.setId(2);
+        pojoForEntryTwo.setTestString("Test3");
+        pojoForEntryTwo.setTestInt(53);
+        pojoForEntryTwo.setTestDouble(53.33);
+        Calendar calendar3 = Calendar.getInstance();
+        calendar3.set(2017, Calendar.MAY, 33);
+        pojoForEntryTwo.setTestDate(new Date(calendar3.getTimeInMillis()));
+
         pojoNotExisting = new POJOWithAnnotations();
         pojoNotExisting.setId(1);
         pojoNotExisting.setTestString("Test");
@@ -51,12 +62,12 @@ public class CRUDTest {
         calendar1.set(2017, Calendar.MAY, 20);
         pojoNotExisting.setTestDate(new Date(calendar1.getTimeInMillis()));
 
-        expectedSelect = new HashMap<>();
-        expectedSelect.put("ID", 1);
-        expectedSelect.put("TESTSTRING", "Test");
-        expectedSelect.put("TESTINT", 5);
-        expectedSelect.put("TESTDOUBLE", 5.22);
-        expectedSelect.put("TESTDATE", new Date(calendar.getTimeInMillis()));
+        expectedSelect = new ArrayList<>();
+        expectedSelect.add(new Condition("ID", 1));
+        expectedSelect.add(new Condition("TESTSTRING", "Test"));
+        expectedSelect.add(new Condition("TESTINT", 5));
+        expectedSelect.add(new Condition("TESTDOUBLE", 5.22));
+        expectedSelect.add(new Condition("TESTDATE", new Date(calendar.getTimeInMillis())));
 
         expectedList = new ArrayList<>();
         expectedList.add(expectedSelect);
@@ -99,38 +110,55 @@ public class CRUDTest {
     }
 
     @Test
+    public void updatePojoInTestTableWithConditions() throws InvocationTargetException, IllegalAccessException, SQLException {
+        Crud crud = new RelationalDatabaseCrud(pojoForEntryTwo, connection);
+        ArrayList<Condition> conditions = new ArrayList<>();
+        conditions.add(new Condition("testString", "Test2"));
+        conditions.add(new Condition("testInt", 52));
+        conditions.add(new Condition("testDouble", 52.22));
+        assertTrue(crud.update(conditions));
+
+        String sql = "SELECT * FROM testTableName " +
+                "WHERE id = 2 AND testString = 'Test3' " +
+                "AND testInt = 53 AND testDouble = 53.33 AND testDate = '2017-5-33'";
+        PreparedStatement statement = connection.prepareStatement(sql);
+        ResultSet resultSet = statement.executeQuery();
+        assertTrue(resultSet.next());
+    }
+
+    @Test
     public void selectQueryReturnsSingleResult() {
         Crud<Connection> crud = new RelationalDatabaseCrud(pojoForEntryOne, connection);
-        List<Map<String, Object>> actualList = crud.read();
+        List<ArrayList<Condition>> actualList = crud.read();
         assertThat(actualList, Matchers.not(IsEmptyCollection.empty()));
         assertThat(actualList, hasSize(1));
     }
 
     @Test
     public void selectQueryReturnsSingleResultWithConditions() {
-        LinkedHashMap<String, Object> conditions = new LinkedHashMap<>();
-        conditions.put("testString", "Test");
-        conditions.put("testInt", 5);
-        conditions.put("testDouble", 5.22);
+        ArrayList<Condition> conditions = new ArrayList<>();
+        conditions.add(new Condition("testString", "Test"));
+        conditions.add(new Condition("testInt", 5));
+        conditions.add(new Condition("testDouble", 5.22));
         Crud<Connection> crud = new RelationalDatabaseCrud(pojoForEntryOne, connection);
-        List<Map<String, Object>> actualList = crud.read(conditions);
+        List<ArrayList<Condition>> actualList = crud.read(conditions);
         assertThat(actualList, Matchers.not(IsEmptyCollection.empty()));
         assertThat(actualList, hasSize(1));
     }
 
     @Test
     public void selectQueryReturnsSingleResultWithConditionsAndColumns() {
-        LinkedHashMap<String, Object> conditions = new LinkedHashMap<>();
-        conditions.put("testString", "Test");
-        conditions.put("testInt", 5);
-        conditions.put("testDouble", 5.22);
+        ArrayList<Condition> conditions = new ArrayList<>();
+        conditions.add(new Condition("testString", "Test"));
+        conditions.add(new Condition("testInt", 5));
+        conditions.add(new Condition("testDouble", 5.22));
         Crud<Connection> crud = new RelationalDatabaseCrud(pojoForEntryOne, connection);
-        List<Map<String, Object>> actualList = crud.read(conditions, "testString", "testInt");
+        List<ArrayList<Condition>> actualList = crud.read(conditions, "testString", "testInt");
         assertThat(actualList, Matchers.not(IsEmptyCollection.empty()));
         assertThat(actualList, hasSize(1));
-        assertTrue(actualList.get(0).containsKey("TESTSTRING"));
-        assertTrue(actualList.get(0).containsKey("TESTINT"));
-        assertFalse(actualList.get(0).containsKey("TESTDATE"));
+        assertTrue(conditions.stream().anyMatch(p -> p.getColumnName().equals("TESTSTRING")));
+        assertTrue(conditions.stream().anyMatch(p -> p.getColumnName().equals("TESTINT")));
+        assertFalse(conditions.stream().anyMatch(p -> p.getColumnName().equals("TESTINT")));
     }
 
     @Test
@@ -154,10 +182,10 @@ public class CRUDTest {
 
     @Test
     public void pojoExistrsInDatabaseWithConditions() throws InvocationTargetException, IllegalAccessException {
-        LinkedHashMap<String, Object> conditions = new LinkedHashMap<>();
-        conditions.put("testString", "Test");
-        conditions.put("testInt", 5);
-        conditions.put("testDouble", 5.22);
+        ArrayList<Condition> conditions = new ArrayList<>();
+        conditions.add(new Condition("testString", "Test"));
+        conditions.add(new Condition("testInt", 5));
+        conditions.add(new Condition("testDouble", 5.22));
         Crud crud = new RelationalDatabaseCrud(pojoForEntryOne, connection);
         assertTrue(crud.exists(conditions));
     }

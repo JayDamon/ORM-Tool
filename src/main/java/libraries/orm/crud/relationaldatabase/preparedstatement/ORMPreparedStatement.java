@@ -1,9 +1,12 @@
 package libraries.orm.crud.relationaldatabase.preparedstatement;
 
+import libraries.orm.crud.Condition;
+
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -11,13 +14,16 @@ public class ORMPreparedStatement {
     public ORMPreparedStatement() {
     }
 
-    public static void setParameters(LinkedHashMap<String, Object> parameterList, PreparedStatement statement)
+    public static void setParameters(ArrayList<Condition> parameterList, PreparedStatement statement)
             throws SQLException {
-        int i = 1;
-        for (Map.Entry<String, Object> entry : parameterList.entrySet()) {
-            setParameterBasedOnType(statement, i, entry.getValue());
-            i++;
+        for (int i = 0; i < parameterList.size(); i++) {
+            setParameterBasedOnType(statement, i, parameterList.get(i).getCondition());
         }
+//        int i = 1;
+//        for (Map.Entry<String, Object> entry : parameterList.entrySet()) {
+//            setParameterBasedOnType(statement, i, entry.getValue());
+//            i++;
+//        }
     }
 
     private static void setParameterBasedOnType(PreparedStatement statement, int i, Object o)

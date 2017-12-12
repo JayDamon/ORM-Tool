@@ -4,6 +4,8 @@ import libraries.orm.annotations.ColumnName;
 import libraries.orm.annotations.DataTable;
 import libraries.orm.annotations.ID;
 import libraries.orm.annotations.TableName;
+import libraries.orm.crud.Condition;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -83,18 +85,26 @@ public class Table {
         return columnNames;
     }
 
-    public LinkedHashMap<String, Object> getIDColumnAndValue() throws InvocationTargetException, IllegalAccessException {
-        LinkedHashMap<String, Object> idColumnAndValue = new LinkedHashMap<>();
+    public ArrayList<Condition> getIDColumnAndValue() throws InvocationTargetException, IllegalAccessException {
+        ArrayList<Condition> idColumnAndValue = new ArrayList<>();
         Method getID = idColumn.getGetterMethod();
-        idColumnAndValue.put(getId().idColumnName(), getID.invoke(crudable));
+        idColumnAndValue.add(
+                new Condition(
+                        getId().idColumnName(), getID.invoke(crudable)
+                ));
         return idColumnAndValue;
     }
 
-    public LinkedHashMap<String, Object> getColumnAndValueList() throws InvocationTargetException, IllegalAccessException {
-        LinkedHashMap<String, Object> columnNameAndValueList = new LinkedHashMap<>();
+    public ArrayList<Condition> getColumnAndValueList() throws InvocationTargetException, IllegalAccessException {
+        ArrayList<Condition> columnNameAndValueList = new ArrayList<>();
         for (Column c : columnList) {
             Method getter = c.getGetterMethod();
-            columnNameAndValueList.put(c.getColumnName().name(), getter.invoke(crudable));
+            columnNameAndValueList.add(
+                    new Condition(
+                            c.getColumnName().name(),
+                            getter.invoke(crudable)
+                    )
+            );
         }
         return columnNameAndValueList;
     }

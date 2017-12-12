@@ -2,6 +2,7 @@ package libraries.orm.orm;
 
 import libraries.orm.annotations.DataTable;
 
+import libraries.orm.crud.Condition;
 import libraries.orm.crud.relationaldatabase.clauses.Clause;
 import libraries.orm.crud.relationaldatabase.clauses.WhereClause;
 import org.junit.Assert;
@@ -13,6 +14,7 @@ import pojo.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,22 +25,22 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class TableTest {
 
     static private Table table;
-    static private Map<String, Object> conditions;
-    static private Map<String, Object> columnValues;
+    static private ArrayList<Condition> conditions;
+    static private ArrayList<Condition> columnValues;
 
     @BeforeAll
     public static void setup() {
         POJOWithAnnotations pojo = POJOWithData.getPojoWithAnnotationsPrimary();
         pojo.setId(2);
 
-        conditions = new HashMap<>();
-        conditions.put("id", 2);
+        conditions = new ArrayList<>();
+        conditions.add(new Condition("id", 2));
 
-        columnValues = new HashMap<>();
-        columnValues.put("testString","TestValue");
-        columnValues.put("testInt",20);
-        columnValues.put("testDouble",30.0D);
-        columnValues.put("testDate",pojo.getTestDate());
+        columnValues = new ArrayList<>();
+        columnValues.add(new Condition("testString","TestValue"));
+        columnValues.add(new Condition("testInt",20));
+        columnValues.add(new Condition("testDouble",30.0D));
+        columnValues.add(new Condition("testDate",pojo.getTestDate()));
 
         table = new Table(pojo);
     }

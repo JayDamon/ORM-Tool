@@ -10,6 +10,7 @@ public class CreateTestDatabaseTable {
         dropTableIfExists(connection);
         insertTable(connection);
         addEntry(connection);
+        addEntryTwo(connection);
     }
 
     private static void insertTable(Connection connection) {
@@ -46,6 +47,18 @@ public class CreateTestDatabaseTable {
 
     private static void addEntry(Connection connection) {
         String insertQuery = "INSERT INTO testTableName(testString, testInt, testDouble, testDate) VALUES ('Test', 5, 5.22, '2017-5-20');";
+        try (
+                PreparedStatement insertPreparedStatement = connection.prepareStatement(insertQuery);
+        ) {
+            insertPreparedStatement.executeUpdate();
+            insertPreparedStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void addEntryTwo(Connection connection) {
+        String insertQuery = "INSERT INTO testTableName(testString, testInt, testDouble, testDate) VALUES ('Test2', 52, 52.22, '2017-5-22');";
         try (
                 PreparedStatement insertPreparedStatement = connection.prepareStatement(insertQuery);
         ) {

@@ -1,19 +1,21 @@
 package libraries.orm.crud.relationaldatabase;
 
+import libraries.orm.crud.Condition;
 import libraries.orm.orm.Table;
 import org.junit.jupiter.api.BeforeAll;
 import pojo.POJOWithAnnotations;
 import pojo.POJOWithData;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 public class SetupTestQueryParameters {
     protected static Table table;
     protected static String[] columnNames;
-    protected static LinkedHashMap<String, Object> columnNamesAndValues;
-    protected static LinkedHashMap<String, Object> expectedConditions;
-    protected static LinkedHashMap<String, Object> expectedColumnNamesAndValues;
+    protected static ArrayList<Condition> columnNamesAndValues;
+    protected static ArrayList<Condition> expectedConditions;
+    protected static ArrayList<Condition> expectedColumnNamesAndValues;
 
     @BeforeAll
     static void setup() throws InvocationTargetException, IllegalAccessException {
@@ -26,13 +28,19 @@ public class SetupTestQueryParameters {
 
         columnNamesAndValues = table.getColumnAndValueList();
 
-        expectedConditions = new LinkedHashMap<>();
-        expectedConditions.put("id", 2);
+        expectedConditions = new ArrayList<>();
+        expectedConditions.add(
+                new Condition("id", 2)
+        );
 
-        expectedColumnNamesAndValues = new LinkedHashMap<>();
-        expectedColumnNamesAndValues.put("testString", "TestValue");
-        expectedColumnNamesAndValues.put("testInt", 20);
-        expectedColumnNamesAndValues.put("testDouble", 30.0D);
-        expectedColumnNamesAndValues.put("testDate", pojo.getTestDate());
+        expectedColumnNamesAndValues = new ArrayList<>();
+        expectedColumnNamesAndValues.add(
+                new Condition("testString", "TestValue"));
+        expectedColumnNamesAndValues.add(
+                new Condition("testInt", 20));
+        expectedColumnNamesAndValues.add(
+                new Condition("testDouble", 30.0D));
+        expectedColumnNamesAndValues.add(
+                new Condition("testDate", pojo.getTestDate()));
     }
 }

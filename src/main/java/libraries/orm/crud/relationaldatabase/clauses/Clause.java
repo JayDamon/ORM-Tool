@@ -1,24 +1,27 @@
 package libraries.orm.crud.relationaldatabase.clauses;
 
+import libraries.orm.crud.Condition;
+
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 public abstract class Clause {
 
     private String clause;
-    private LinkedHashMap<String, Object> conditions;
+    private ArrayList<Condition> conditions;
 
-    public Clause(LinkedHashMap<String, Object> conditions) {
+    public Clause(ArrayList<Condition> conditions) {
         this.conditions = conditions;
         this.clause = writeClause(conditions);
     }
 
-    protected abstract String writeClause(LinkedHashMap<String, Object> conditions);
+    protected abstract String writeClause(ArrayList<Condition> conditions);
 
     public String toString() {
         return this.clause;
     }
 
-    public LinkedHashMap<String, Object> getConditions() {
+    public ArrayList<Condition> getConditions() {
         return this.conditions;
     }
 }

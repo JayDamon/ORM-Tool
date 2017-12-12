@@ -1,7 +1,9 @@
 package libraries.orm.crud.relationaldatabase.query;
 
+import libraries.orm.crud.Condition;
 import libraries.orm.crud.relationaldatabase.clauses.WhereClause;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 public abstract class Query {
@@ -9,14 +11,14 @@ public abstract class Query {
     private StringBuilder queryBuilder;
     private String query;
     private WhereClause whereClause;
-    private LinkedHashMap<String, Object> columnNameAndValueList;
+    private ArrayList<Condition> columnNameAndValueList;
 
     public Query(String tableName, String... columnNames) {
         populateConditionsAndValues(columnNames);
         this.query = writeQuery(tableName, columnNameAndValueList).toString();
     }
 
-    public Query(String tableName, LinkedHashMap<String, Object> columnNameAndValueList) {
+    public Query(String tableName, ArrayList<Condition> columnNameAndValueList) {
         this.columnNameAndValueList = columnNameAndValueList;
         this.query = writeQuery(tableName, columnNameAndValueList).toString();
     }
@@ -26,12 +28,12 @@ public abstract class Query {
         setQueryDetails(tableName, whereClause, columnNameAndValueList);
     }
 
-    public Query(String tableName, WhereClause whereClause, LinkedHashMap<String, Object> columnNameAndValueList) {
+    public Query(String tableName, WhereClause whereClause, ArrayList<Condition> columnNameAndValueList) {
         this.columnNameAndValueList = columnNameAndValueList;
         setQueryDetails(tableName, whereClause, columnNameAndValueList);
     }
 
-    private void setQueryDetails(String tableName, WhereClause whereClause, LinkedHashMap<String, Object> columnNameAndValueList) {
+    private void setQueryDetails(String tableName, WhereClause whereClause, ArrayList<Condition> columnNameAndValueList) {
         this.queryBuilder = writeQuery(tableName, columnNameAndValueList);
         this.whereClause = whereClause;
         queryBuilder.append(whereClause.toString());
@@ -39,13 +41,13 @@ public abstract class Query {
     }
 
     private void populateConditionsAndValues(String[] columnNames) {
-        columnNameAndValueList = new LinkedHashMap<>();
+        columnNameAndValueList = new ArrayList<>();
         for (String s : columnNames) {
-            columnNameAndValueList.put(s, null);
+            columnNameAndValueList.add(new Condition(s, null));
         }
     }
 
-    protected abstract StringBuilder writeQuery(String tableName, LinkedHashMap<String, Object> conditionsAndValues);
+    protected abstract StringBuilder writeQuery(String tableName, ArrayList<Condition> conditionsAndValues);
 
     public String toString() {
         return this.query;
@@ -55,7 +57,7 @@ public abstract class Query {
         return this.whereClause;
     }
 
-    public LinkedHashMap<String, Object> getColumnNameAndValueList() {
+    public ArrayList<Condition> getColumnNameAndValueList() {
         return columnNameAndValueList;
     }
 }

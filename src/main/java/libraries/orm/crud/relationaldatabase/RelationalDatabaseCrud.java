@@ -1,5 +1,6 @@
 package libraries.orm.crud.relationaldatabase;
 
+import libraries.orm.crud.Condition;
 import libraries.orm.crud.Crud;
 import libraries.orm.crud.relationaldatabase.clauses.Clause;
 import libraries.orm.crud.relationaldatabase.clauses.WhereClause;
@@ -25,12 +26,12 @@ public class RelationalDatabaseCrud extends Crud<Connection> {
     @Override
     public boolean create() throws InvocationTargetException, IllegalAccessException {
         Query query = new InsertQuery(table.getTableName().name(), table.getColumnAndValueList());
-        LinkedHashMap<String, Object> conditions = getConditionsFromMap(query);
+        ArrayList<Condition> conditions = getConditionsFromMap(query);
         return executeUpdateQuery(query, conditions);
     }
 
     @Override
-    public List<Map<String, Object>> read() {
+    public List<ArrayList<Condition>> read() {
         Query query = new SelectQuery(
                 table.getTableName().name()
         );
@@ -38,7 +39,7 @@ public class RelationalDatabaseCrud extends Crud<Connection> {
     }
 
     @Override
-    public List<Map<String, Object>> read(LinkedHashMap<String, Object> conditions) {
+    public List<ArrayList<Condition>> read(ArrayList<Condition> conditions) {
         Query query = new SelectQuery(
                 table.getTableName().name(),
                 new WhereClause(conditions)
@@ -47,7 +48,7 @@ public class RelationalDatabaseCrud extends Crud<Connection> {
     }
 
     @Override
-    public List<Map<String, Object>> read(LinkedHashMap<String, Object> conditions, String... columnNames) {
+    public List<ArrayList<Condition>> read(ArrayList<Condition> conditions, String... columnNames) {
         Query query = new SelectQuery(
                 table.getTableName().name(),
                 new WhereClause(conditions),
@@ -56,12 +57,12 @@ public class RelationalDatabaseCrud extends Crud<Connection> {
         return executeSelectQuery(query, dataSource);
     }
 
-    private static List<Map<String, Object>> executeSelectQuery(Query query, Connection connection) {
-        List<Map<String, Object>> list = new ArrayList<>();
+    private static List<ArrayList<Condition>> executeSelectQuery(Query query, Connection connection) {
+        List<ArrayList<Condition>> list = new ArrayList<>();
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         ArrayList<SQLException> exceptions = new ArrayList<>();
-        LinkedHashMap<String, Object> conditions = getConditionsFromMap(query);
+        ArrayList<Condition> conditions = getConditionsFromMap(query);
         try {
             statement = connection.prepareStatement(query.toString());
             if (conditions != null) ORMPreparedStatement.setParameters(conditions, statement);
@@ -69,12 +70,13 @@ public class RelationalDatabaseCrud extends Crud<Connection> {
             ResultSetMetaData metaData = resultSet.getMetaData();
             int columnCount = metaData.getColumnCount();
             while (resultSet.next()) {
-                Map<String, Object> columnList = new HashMap<>();
+                ArrayList<Condition> columnList = new ArrayList<>();
                 list.add(columnList);
                 for (int column = 1; column <= columnCount; column++) {
-                    columnList.put(
+                    columnList.add(
+                            new Condition(
                             metaData.getColumnName(column),
-                            resultSet.getObject(column)
+                            resultSet.getObject(column))
                     );
                 }
             }
@@ -111,7 +113,20 @@ public class RelationalDatabaseCrud extends Crud<Connection> {
                 ),
                 table.getColumnAndValueList()
         );
-        LinkedHashMap<String, Object> conditionsAndValueList = getConditionsFromMap(query);
+        ArrayList<Condition> conditionsAndValueList = getConditionsFromMap(query);
+        return executeUpdateQuery(query, conditionsAndValueList);
+    }
+
+    @Override
+    public boolean update(ArrayList<Condition> conditions) throws InvocationTargetException, IllegalAccessException {
+        Query query = new UpdateQuery(
+                table.getTableName().name(),
+                new WhereClause(
+                        conditions
+                ),
+                table.getColumnAndValueList()
+        );
+        ArrayList<Condition> conditionsAndValueList = getConditionsFromMap(query);
         return executeUpdateQuery(query, conditionsAndValueList);
     }
 
@@ -123,12 +138,12 @@ public class RelationalDatabaseCrud extends Crud<Connection> {
                         table.getIDColumnAndValue()
                 )
         );
-        LinkedHashMap<String, Object> conditions = getConditionsFromMap(query);
+        ArrayList<Condition> conditions = getConditionsFromMap(query);
         return executeUpdateQuery(query, conditions);
     }
 
     @Override
-    public boolean exists(LinkedHashMap<String, Object> conditions) {
+    public boolean exists(ArrayList<Condition> conditions) {
         Query query = new SelectQuery(
                 table.getTableName().name(),
                 new WhereClause(
@@ -153,7 +168,7 @@ public class RelationalDatabaseCrud extends Crud<Connection> {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         ArrayList<SQLException> exceptions = new ArrayList<>();
-        LinkedHashMap<String, Object> conditions = getConditionsFromMap(query);
+        ArrayList<Condition> conditions = getConditionsFromMap(query);
         boolean exists = false;
         try {
             statement = dataSource.prepareStatement(query.toString());
@@ -184,16 +199,17 @@ public class RelationalDatabaseCrud extends Crud<Connection> {
         return exists;
     }
 
-    private static LinkedHashMap<String, Object> getConditionsFromMap(Query query) {
-        LinkedHashMap<String, Object> conditions = new LinkedHashMap<>(query.getColumnNameAndValueList());
+    private static ArrayList<Condition> getConditionsFromMap(Query query) {
+        ArrayList<Condition> conditions = new ArrayList<>();
+        conditions.addAll(query.getColumnNameAndValueList());
         Clause whereClause = query.getWhereClause();
         if (whereClause != null && whereClause.getConditions() != null) {
-            conditions.putAll(whereClause.getConditions());
+            conditions.addAll(whereClause.getConditions());
         }
         return conditions;
     }
 
-    private boolean executeUpdateQuery(Query query, LinkedHashMap<String, Object> conditions) {
+    private boolean executeUpdateQuery(Query query, ArrayList<Condition> conditions) {
         try (
                 PreparedStatement statement = dataSource.prepareStatement(query.toString())
         ) {

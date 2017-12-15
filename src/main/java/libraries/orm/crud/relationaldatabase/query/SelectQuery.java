@@ -24,12 +24,6 @@ public class SelectQuery extends Query {
                 if (i != 0) sql.append(", ");
                 sql.append(conditions.get(i).getColumnName());
             }
-//            int i = 0;
-//            for (Map.Entry<String, Object> entry : conditionsAndValues.entrySet()) {
-//                if (i != 0) sql.append(", ");
-//                sql.append(entry.getKey());
-//                i++;
-//            }
             sql.append(" ");
         }
         sql.append("FROM ").append(tableName);

@@ -12,53 +12,58 @@ import libraries.orm.orm.Table;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class RelationalDatabaseCrud extends Crud<Connection> {
+public class RelationalDatabaseCrud<C extends Crudable> extends Crud<C, Connection> {
 
-    private Table table;
-
-    public RelationalDatabaseCrud(Crudable crudable, Connection database) {
-        super(crudable, database);
-        table = new Table(crudable);
+    public RelationalDatabaseCrud(Class<C> crudable, Connection connection) {
+        super(crudable, connection);
     }
 
     @Override
-    public boolean create() throws InvocationTargetException, IllegalAccessException {
-        Query query = new InsertQuery(table.getTableName().name(), table.getColumnAndValueList());
+    public boolean create(C crudable) throws InvocationTargetException, IllegalAccessException {
+        Query query = new InsertQuery(Table.getTableName(crudable.getClass()).name(), Table.getColumnAndValueList(crudable));
         ArrayList<Condition> conditions = getConditionsFromMap(query);
         return executeUpdateQuery(query, conditions);
     }
 
     @Override
-    public List<ArrayList<Condition>> read() {
+    public List<C> read() {
         Query query = new SelectQuery(
-                table.getTableName().name()
+                Table.getTableName(crudable).name()
         );
-        return executeSelectQuery(query, dataSource);
+        return executeSelectQuery(query);
     }
 
     @Override
-    public List<ArrayList<Condition>> read(ArrayList<Condition> conditions) {
+    public List<C> read(String... columnNames) {
+
+        return null;
+    }
+
+    @Override
+    public List<C> read(ArrayList<Condition> conditions) {
         Query query = new SelectQuery(
-                table.getTableName().name(),
+                Table.getTableName(crudable).name(),
                 new WhereClause(conditions)
         );
-        return executeSelectQuery(query, dataSource);
+        return executeSelectQuery(query);
     }
 
     @Override
-    public List<ArrayList<Condition>> read(ArrayList<Condition> conditions, String... columnNames) {
+    public List<C> read(ArrayList<Condition> conditions, String... columnNames) {
         Query query = new SelectQuery(
-                table.getTableName().name(),
+                Table.getTableName(crudable).name(),
                 new WhereClause(conditions),
                 columnNames
         );
-        return executeSelectQuery(query, dataSource);
+        return executeSelectQuery(query);
     }
 
-    private static List<ArrayList<Condition>> executeSelectQuery(Query query, Connection connection) {
-        List<ArrayList<Condition>> list = new ArrayList<>();
+    private List<C> executeSelectQuery(Query query) {
+        List<C> list = new ArrayList<>();
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         ArrayList<SQLException> exceptions = new ArrayList<>();
@@ -68,21 +73,20 @@ public class RelationalDatabaseCrud extends Crud<Connection> {
             conditions.addAll(clause.getConditions());
         }
         try {
-            statement = connection.prepareStatement(query.toString());
+            statement = dataSource.prepareStatement(query.toString());
             if (conditions.size() > 0) ORMPreparedStatement.setParameters(conditions, statement);
             resultSet = statement.executeQuery();
             ResultSetMetaData metaData = resultSet.getMetaData();
             int columnCount = metaData.getColumnCount();
             while (resultSet.next()) {
-                ArrayList<Condition> columnList = new ArrayList<>();
-                list.add(columnList);
+                Map<String, Object> results = new HashMap<>();
                 for (int column = 1; column <= columnCount; column++) {
-                    columnList.add(
-                            new Condition(
+                    results.put(
                             metaData.getColumnName(column),
-                            resultSet.getObject(column))
+                            resultSet.getObject(column)
                     );
                 }
+                list.add(CrudableFactory.getCrudable(crudable, results));
             }
         } catch (SQLException e) {
             exceptions.add(e);
@@ -109,37 +113,37 @@ public class RelationalDatabaseCrud extends Crud<Connection> {
     }
 
     @Override
-    public boolean update() throws InvocationTargetException, IllegalAccessException {
+    public boolean update(C crudable) throws InvocationTargetException, IllegalAccessException {
         Query query = new UpdateQuery(
-                table.getTableName().name(),
+                Table.getTableName(crudable.getClass()).name(),
                 new WhereClause(
-                        table.getIDColumnAndValue()
+                        Table.getIDColumnAndValue(crudable)
                 ),
-                table.getColumnAndValueList()
+                Table.getColumnAndValueList(crudable)
         );
         ArrayList<Condition> conditionsAndValueList = getConditionsFromMap(query);
         return executeUpdateQuery(query, conditionsAndValueList);
     }
 
     @Override
-    public boolean update(ArrayList<Condition> conditions) throws InvocationTargetException, IllegalAccessException {
+    public boolean update(C crudable, ArrayList<Condition> conditions) throws InvocationTargetException, IllegalAccessException {
         Query query = new UpdateQuery(
-                table.getTableName().name(),
+                Table.getTableName(crudable.getClass()).name(),
                 new WhereClause(
                         conditions
                 ),
-                table.getColumnAndValueList()
+                Table.getColumnAndValueList(crudable)
         );
         ArrayList<Condition> conditionsAndValueList = getConditionsFromMap(query);
         return executeUpdateQuery(query, conditionsAndValueList);
     }
 
     @Override
-    public boolean delete() throws InvocationTargetException, IllegalAccessException {
+    public boolean delete(C crudable) throws InvocationTargetException, IllegalAccessException {
         Query query = new DeleteQuery(
-                table.getTableName().name(),
+                Table.getTableName(crudable.getClass()).name(),
                 new WhereClause(
-                        table.getIDColumnAndValue()
+                        Table.getIDColumnAndValue(crudable)
                 )
         );
         ArrayList<Condition> conditions = getConditionsFromMap(query);
@@ -147,9 +151,9 @@ public class RelationalDatabaseCrud extends Crud<Connection> {
     }
 
     @Override
-    public boolean exists(ArrayList<Condition> conditions) {
+    public boolean exists(C crudable, ArrayList<Condition> conditions) {
         Query query = new SelectQuery(
-                table.getTableName().name(),
+                Table.getTableName(crudable.getClass()).name(),
                 new WhereClause(
                         conditions
                 )
@@ -158,11 +162,11 @@ public class RelationalDatabaseCrud extends Crud<Connection> {
     }
 
     @Override
-    public boolean exists() throws InvocationTargetException, IllegalAccessException {
+    public boolean exists(C crudable) throws InvocationTargetException, IllegalAccessException {
         Query query = new SelectQuery(
-                table.getTableName().name(),
+                Table.getTableName(crudable.getClass()).name(),
                 new WhereClause(
-                        table.getIDColumnAndValue()
+                        Table.getIDColumnAndValue(crudable)
                 )
         );
         return exists(query);

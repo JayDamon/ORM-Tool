@@ -11,9 +11,9 @@ public class Column {
     private ColumnName columnName;
     private Method getterMethod;
 
-    public Column(Crudable object, Field field) throws NoSuchMethodException {
+    public <C extends Crudable> Column(Class<C> crudable, Field field) throws NoSuchMethodException {
         this.setColumnName(field.getAnnotation(ColumnName.class));
-        this.setGetterMethod(this.createGetterMethod(object, field));
+        this.setGetterMethod(this.createGetterMethod(crudable, field));
     }
 
     public ColumnName getColumnName() {
@@ -32,7 +32,7 @@ public class Column {
         this.getterMethod = getterMethod;
     }
 
-    public Method createGetterMethod(Crudable object, Field f) throws NoSuchMethodException {
+    public <C extends Crudable> Method createGetterMethod(Class<C> crudable, Field f) throws NoSuchMethodException {
         String fieldName = StringUtility.capitalizeFirstLetter(f.getName());
         String method;
         if (f.getType().equals(Boolean.TYPE)) {
@@ -40,6 +40,6 @@ public class Column {
         } else {
             method = "get" + fieldName;
         }
-        return object.getClass().getMethod(method);
+        return crudable.getMethod(method);
     }
 }

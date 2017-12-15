@@ -13,19 +13,8 @@ import java.util.*;
 
 @DataTable
 public class Table {
-    private TableName tableName;
-    private List<Column> columnList;
-    private ID id;
-    private Crudable crudable;
-    private Column idColumn;
 
-    public Table(Crudable crudable) {
-        this.setCrudable(crudable);
-        this.setTableName(getTableNameFromObject(crudable));
-        this.setColumnList(getColumnNameFields(crudable));
-    }
-
-    private static TableName getTableNameFromObject(Crudable crudable) {
+    public static <C extends Crudable> TableName getTableName(Class<C> crudable) {
         if (crudable.getClass().isAnnotationPresent(TableName.class)) {
             return crudable.getClass().getAnnotation(TableName.class);
         } else {
@@ -33,9 +22,9 @@ public class Table {
         }
     }
 
-    private List<Column> getColumnNameFields(Crudable crudable) {
+    private static <C extends Crudable> List<Column> getColumns(Class<C> crudable) {
         List<Column> names = new ArrayList<>();
-        Field[] fields = crudable.getClass().getDeclaredFields();
+        Field[] fields = crudable.getDeclaredFields();
         boolean idExists = false;
         boolean columnNameExists = false;
 
@@ -43,25 +32,17 @@ public class Table {
             if (f.isAnnotationPresent(ColumnName.class)) {
                 addColumnToList(names, crudable, f);
                 columnNameExists = true;
-            } else if (f.isAnnotationPresent(ID.class)) {
-                this.id = f.getAnnotation(ID.class);
-                this.idColumn = createColumnFromField(crudable, f);
-                idExists = true;
             }
         }
 
-        if (idExists && columnNameExists) {
+        if (names.size() > 0) {
             return names;
-        } else if (!idExists && !columnNameExists) {
-            throw new IllegalArgumentException(crudable.getClass().toString() + ": There is not ID or ColumnName field or they are annotated incorrectly");
-        } else if (!idExists) {
-            throw new IllegalArgumentException(crudable.getClass().toString() + ": ID Field does not exist or is not annotated properly");
         } else {
-            throw new IllegalArgumentException(crudable.getClass().toString() + ": There is no ColumnName Field in class or is not annotated properly");
+                throw new IllegalArgumentException(crudable.getClass().toString() + ": There is no ColumnName Field in class or is not annotated properly");
         }
     }
 
-    private static void addColumnToList(List<Column> names, Crudable c, Field f) {
+    private static <C extends Crudable> void addColumnToList(List<Column> names, Class<C> c, Field f) {
         try {
             names.add(new Column(c, f));
         } catch (NoSuchMethodException var5) {
@@ -69,7 +50,7 @@ public class Table {
         }
     }
 
-    private static Column createColumnFromField(Crudable crudable, Field field) {
+    private static <C extends Crudable> Column createColumnFromField(Class<C> crudable, Field field) {
         try {
             return new Column(crudable, field);
         } catch (NoSuchMethodException var5) {
@@ -77,27 +58,28 @@ public class Table {
         }
     }
 
-    public List<String> getColumnNameList() {
+    public static <C extends Crudable> List<String> getColumnNameList(Class<C> crudable) {
         List<String> columnNames = new ArrayList<>();
-        for (Column c : columnList) {
+        for (Column c : getColumns(crudable)) {
             columnNames.add(c.getColumnName().name());
         }
         return columnNames;
     }
 
-    public ArrayList<Condition> getIDColumnAndValue() throws InvocationTargetException, IllegalAccessException {
+    public static ArrayList<Condition> getIDColumnAndValue(Crudable crudable) throws InvocationTargetException, IllegalAccessException {
         ArrayList<Condition> idColumnAndValue = new ArrayList<>();
-        Method getID = idColumn.getGetterMethod();
+        Column column = getIDColumn(crudable.getClass());
+        Method getID = column.getGetterMethod();
         idColumnAndValue.add(
                 new Condition(
-                        getId().idColumnName(), getID.invoke(crudable)
+                        column.getColumnName().name(), getID.invoke(crudable)
                 ));
         return idColumnAndValue;
     }
 
-    public ArrayList<Condition> getColumnAndValueList() throws InvocationTargetException, IllegalAccessException {
+    public static <C extends Crudable> ArrayList<Condition> getColumnAndValueList(Crudable crudable) throws InvocationTargetException, IllegalAccessException {
         ArrayList<Condition> columnNameAndValueList = new ArrayList<>();
-        for (Column c : columnList) {
+        for (Column c : getColumns(crudable.getClass())) {
             Method getter = c.getGetterMethod();
             columnNameAndValueList.add(
                     new Condition(
@@ -109,43 +91,16 @@ public class Table {
         return columnNameAndValueList;
     }
 
-    public TableName getTableName() {
-        return this.tableName;
-    }
-
-    public void setTableName(TableName tableName) {
-        this.tableName = tableName;
-    }
-
-    public List<Column> getColumnList() {
-        return this.columnList;
-    }
-
-    public void setColumnList(List<Column> columnList) {
-        this.columnList = columnList;
-    }
-
-    public ID getId() {
-        return this.id;
-    }
-
-    public void setId(ID id) {
-        this.id = id;
-    }
-
-    public Crudable getCrudable() {
-        return crudable;
-    }
-
-    public void setCrudable(Crudable crudable) {
-        this.crudable = crudable;
-    }
-
-    public Column getIdColumn() {
-        return idColumn;
-    }
-
-    public void setIdColumn(Column idColumn) {
-        this.idColumn = idColumn;
+    public static <C extends Crudable> Column getIDColumn(Class<C> c) {
+        try {
+            for (Field f : c.getClass().getFields()) {
+                if (f.isAnnotationPresent(ID.class)) {
+                    return new Column(c, f);
+                }
+            }
+        } catch (NoSuchMethodException e) {
+            throw new IllegalArgumentException(c.getClass().toString() + ": Getter method does not exist or it is not named properly", e);
+        }
+        throw new IllegalArgumentException(c.getClass().toString() + ": ID Column Does not exits");
     }
 }

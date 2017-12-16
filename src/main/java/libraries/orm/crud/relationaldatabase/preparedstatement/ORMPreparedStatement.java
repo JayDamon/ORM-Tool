@@ -19,11 +19,6 @@ public class ORMPreparedStatement {
         for (int i = 0; i < parameterList.size(); i++) {
             setParameterBasedOnType(statement, i + 1, parameterList.get(i).getCondition());
         }
-//        int i = 1;
-//        for (Map.Entry<String, Object> entry : parameterList.entrySet()) {
-//            setParameterBasedOnType(statement, i, entry.getValue());
-//            i++;
-//        }
     }
 
     private static void setParameterBasedOnType(PreparedStatement statement, int i, Object o)

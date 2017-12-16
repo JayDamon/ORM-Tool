@@ -3,7 +3,10 @@ package libraries.orm.crud.relationaldatabase.query;
 import libraries.orm.crud.Condition;
 import libraries.orm.crud.relationaldatabase.SetupTestQueryParameters;
 import libraries.orm.crud.relationaldatabase.clauses.WhereClause;
+import libraries.orm.orm.Table;
 import org.junit.jupiter.api.Test;
+import pojo.POJOWithAnnotations;
+import pojo.POJOWithData;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -21,7 +24,7 @@ public class UpdateQueryTest extends SetupTestQueryParameters {
                 "UPDATE testTableName " +
                         "SET testString = ?, testInt = ?, testDouble = ?, testDate = ? WHERE id = ?",
                 new UpdateQuery(
-                        table.getTableName().name(),
+                        Table.getTableName(POJOWithAnnotations.class).name(),
                         new WhereClause(
                                 expectedConditions
                         ),
@@ -34,7 +37,7 @@ public class UpdateQueryTest extends SetupTestQueryParameters {
     public void whereClauseContainedInUpdateQueryObect() {
         assertNotNull(
                 new UpdateQuery(
-                        table.getTableName().name(),
+                        Table.getTableName(POJOWithAnnotations.class).name(),
                         new WhereClause(
                                 expectedConditions
                         ),
@@ -46,8 +49,8 @@ public class UpdateQueryTest extends SetupTestQueryParameters {
     @Test
     public void udpateQueryCreatedWithWhereClauseHasExpectedColumns() throws InvocationTargetException, IllegalAccessException {
         ArrayList<Condition> list =  new UpdateQuery(
-                table.getTableName().name(),
-                new WhereClause(table.getIDColumnAndValue()),
+                Table.getTableName(POJOWithAnnotations.class).name(),
+                new WhereClause(Table.getIDColumnAndValue(POJOWithData.getPojoWithAnnotationsPrimary())),
                 columnNamesAndValues).getColumnNameAndValueList();
         assertEquals(list.get(0).getCondition(),expectedColumnNamesAndValues.get(0).getCondition());
         assertEquals(list.get(0).getColumnName(),expectedColumnNamesAndValues.get(0).getColumnName());

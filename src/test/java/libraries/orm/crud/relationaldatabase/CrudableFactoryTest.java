@@ -16,9 +16,9 @@ public class CrudableFactoryTest {
     @BeforeAll
     public static void setup() {
         Map<String, Object> resultSet = new HashMap<>();
-        resultSet.put("testString", "string value");
-        resultSet.put("testInt", 5);
-        resultSet.put("testDouble", 2.2);
+        resultSet.put("TESTSTRING", "string value");
+        resultSet.put("TESTINT", 5);
+        resultSet.put("TESTDOUBLE", 2.2);
 
         resultPojo = CrudableFactory.getCrudable(POJOWithAnnotations.class, resultSet);
     }

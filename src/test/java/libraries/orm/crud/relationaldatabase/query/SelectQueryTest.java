@@ -3,6 +3,7 @@ package libraries.orm.crud.relationaldatabase.query;
 import libraries.orm.crud.Condition;
 import libraries.orm.crud.relationaldatabase.SetupTestQueryParameters;
 import libraries.orm.crud.relationaldatabase.clauses.WhereClause;
+import libraries.orm.orm.Table;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.InvocationTargetException;
@@ -18,7 +19,7 @@ public class SelectQueryTest extends SetupTestQueryParameters {
         assertEquals(
                 "SELECT * FROM testTableName",
                 new SelectQuery(
-                        table.getTableName().name()
+                        Table.getTableName(pojo.getClass()).name()
                 ).toString()
         );
     }
@@ -28,20 +29,20 @@ public class SelectQueryTest extends SetupTestQueryParameters {
         assertEquals(
                 "SELECT testString FROM testTableName",
                 new SelectQuery(
-                        table.getTableName().name(),
-                        table.getColumnNameList().get(0)
+                        Table.getTableName(pojo.getClass()).name(),
+                        Table.getColumnNameList(pojo.getClass()).get(0)
                 ).toString()
         );
     }
 
     @Test
     public void selectQueryCreatedWithMulitpleColumnNames() {
-        String[] args = new String[table.getColumnNameList().size()];
-        args = table.getColumnNameList().toArray(args);
+        String[] args = new String[Table.getColumnNameList(pojo.getClass()).size()];
+        args = Table.getColumnNameList(pojo.getClass()).toArray(args);
         assertEquals(
                 "SELECT testString, testInt, testDouble, testDate FROM testTableName",
                 new SelectQuery(
-                        table.getTableName().name(),
+                        Table.getTableName(pojo.getClass()).name(),
                         args
                 ).toString()
         );
@@ -49,14 +50,14 @@ public class SelectQueryTest extends SetupTestQueryParameters {
 
     @Test
     public void selectQueryCreatedWithMultipleColumnsAndWhereClause() throws InvocationTargetException, IllegalAccessException {
-        String[] columnList = new String[table.getColumnNameList().size()];
-        columnList = table.getColumnNameList().toArray(columnList);
-        ArrayList<Condition> args = table.getColumnAndValueList();
+        String[] columnList = new String[Table.getColumnNameList(pojo.getClass()).size()];
+        columnList = Table.getColumnNameList(pojo.getClass()).toArray(columnList);
+        ArrayList<Condition> args = Table.getColumnAndValueList(pojo);
         assertEquals(
                 "SELECT testString, testInt, testDouble, testDate FROM testTableName " +
                         "WHERE testString = ? AND testInt = ? AND testDouble = ? AND testDate = ?",
                 new SelectQuery(
-                        table.getTableName().name(),
+                        Table.getTableName(pojo.getClass()).name(),
                         new WhereClause(args),
                         columnList
                 ).toString()

@@ -1,13 +1,17 @@
 package pojo;
 
 import libraries.orm.annotations.ColumnName;
+import libraries.orm.annotations.ID;
 import libraries.orm.annotations.TableName;
 import libraries.orm.orm.Crudable;
 
 @TableName(
         name = "testTableName"
 )
-public class POJOWrongGetterNoIDAnnotation implements Crudable {
+public class POJOWrongGetters implements Crudable {
+    @ID
+    @ColumnName(name = "id")
+    private int id;
     @ColumnName(
             name = "testString"
     )
@@ -17,7 +21,15 @@ public class POJOWrongGetterNoIDAnnotation implements Crudable {
     )
     private boolean testInt;
 
-    public POJOWrongGetterNoIDAnnotation() {
+    public POJOWrongGetters() {
+    }
+
+    public int getTheId() {
+        return id;
+    }
+
+    public void setTheId(int id) {
+        this.id = id;
     }
 
     public String testString() {

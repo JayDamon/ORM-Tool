@@ -39,8 +39,11 @@ public class RelationalDatabaseCrud<C extends Crudable> extends Crud<C, Connecti
 
     @Override
     public List<C> read(String... columnNames) {
-
-        return null;
+        Query query = new SelectQuery(
+                Table.getTableName(crudable).name(),
+                columnNames
+        );
+        return executeSelectQuery(query);
     }
 
     @Override
@@ -82,7 +85,7 @@ public class RelationalDatabaseCrud<C extends Crudable> extends Crud<C, Connecti
                 Map<String, Object> results = new HashMap<>();
                 for (int column = 1; column <= columnCount; column++) {
                     results.put(
-                            metaData.getColumnName(column),
+                            metaData.getColumnName(column).toUpperCase(),
                             resultSet.getObject(column)
                     );
                 }
@@ -212,8 +215,7 @@ public class RelationalDatabaseCrud<C extends Crudable> extends Crud<C, Connecti
     }
 
     private static ArrayList<Condition> getConditionsFromMap(Query query) {
-        ArrayList<Condition> conditions = new ArrayList<>();
-        conditions.addAll(query.getColumnNameAndValueList());
+        ArrayList<Condition> conditions = new ArrayList<>(query.getColumnNameAndValueList());
         Clause whereClause = query.getWhereClause();
         if (whereClause != null && whereClause.getConditions() != null) {
             conditions.addAll(whereClause.getConditions());

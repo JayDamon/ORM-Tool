@@ -8,7 +8,8 @@ import libraries.orm.orm.Crudable;
 
 @TableName(name = "testTableName")
 public class POJOWithAnnotations implements Crudable {
-    @ID(idColumnName = "id")
+    @ID
+    @ColumnName(name = "id")
     private int id;
     @ColumnName(name = "testString")
     private String testString;

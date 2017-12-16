@@ -16,8 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class OrderByClauseTest {
     @Test
     public void soloOrderByClauseCanBeCreated() throws InvocationTargetException, IllegalAccessException {
-        Table table = new Table(POJOWithData.getPojoWithAnnotationsPrimary());
-        ArrayList<Condition> tableMap = table.getColumnAndValueList();
+        ArrayList<Condition> tableMap = Table.getColumnAndValueList(POJOWithData.getPojoWithAnnotationsPrimary());
         ArrayList<Condition> parameters = new ArrayList<>();
         parameters.add(
                 new Condition(

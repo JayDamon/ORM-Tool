@@ -8,9 +8,7 @@ import libraries.orm.orm.Crudable;
         name = "testTableName"
 )
 public class POJOTableAndIDAnnotationButNoColumnAnnotations implements Crudable {
-    @ID(
-            idColumnName = "id"
-    )
+    @ID
     private int id;
 
     public POJOTableAndIDAnnotationButNoColumnAnnotations() {

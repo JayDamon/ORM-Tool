@@ -2,7 +2,6 @@ package libraries.orm.orm;
 
 import libraries.orm.annotations.DataTable;
 import libraries.orm.crud.Condition;
-import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -18,13 +17,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TableTest {
 
-    static private Table table;
     static private ArrayList<Condition> conditions;
     static private ArrayList<Condition> columnValues;
+    static private POJOWithAnnotations pojo;
+    static private ArrayList<Condition> columnValuesWithID;
 
     @BeforeAll
     public static void setup() {
-        POJOWithAnnotations pojo = POJOWithData.getPojoWithAnnotationsPrimary();
+        pojo = POJOWithData.getPojoWithAnnotationsPrimary();
         pojo.setId(2);
 
         conditions = new ArrayList<>();
@@ -34,9 +34,15 @@ public class TableTest {
         columnValues.add(new Condition("testString","TestValue"));
         columnValues.add(new Condition("testInt",20));
         columnValues.add(new Condition("testDouble",30.0D));
-        columnValues.add(new Condition("testDate",pojo.getTestDate()));
+        columnValues.add(new Condition("testDate", pojo.getTestDate()));
 
-        table = new Table(pojo);
+        columnValuesWithID = new ArrayList<>();
+        columnValuesWithID.add(new Condition("id", 2));
+        columnValuesWithID.add(new Condition("testString","TestValue"));
+        columnValuesWithID.add(new Condition("testInt",20));
+        columnValuesWithID.add(new Condition("testDouble",30.0D));
+        columnValuesWithID.add(new Condition("testDate", pojo.getTestDate()));
+
     }
 
     @Test
@@ -48,59 +54,70 @@ public class TableTest {
     }
 
     @Test
-    public void getIllegalArgumentExceptionWhenNoIdExists() {
-        assertThrows(IllegalArgumentException.class, () -> new Table(new POJONoFieldAnnotations()));
+    public void noTableNameAnnotationThrowsException() {
+        assertThrows(IllegalArgumentException.class, () -> Table.getTableName(POJONoAnnotation.class));
     }
 
     @Test
-    public void objectWithNoAnnotationThrowsException() {
-        assertThrows(IllegalArgumentException.class, () -> (new Table(new POJONoAnnotation())).getTableName().name());
-    }
-
-    @Test
-    public void objectHasNoColumnNameFields() {
-        assertThrows(IllegalArgumentException.class, () -> new Table(new POJONoAnnotation()));
-    }
-
-    @Test
-    public void emptyObjectHasNoColumnNameFields() {
-        assertThrows(IllegalArgumentException.class, () -> new Table(new POJOEmpty()));
-    }
-
-    @Test
-    public void emptyObjectPOJOHasWrongGetters() {
-        assertThrows(IllegalArgumentException.class, () -> (
-                new Table(new POJOWrongGetterNoIDAnnotation())).getColumnList().size()
-        );
-    }
-
-    @Test
-    public void noFieldAnnotationsThowsException() {
-        assertThrows(IllegalArgumentException.class, () ->
-                new Table(new POJOTableAndIDAnnotationButNoColumnAnnotations())
-        );
+    public void noColumnNameAnnotation() {
+        assertThrows(IllegalArgumentException.class, () -> Table.getColumnNameList(POJONoAnnotation.class));
     }
 
     @Test
     public void noIDAnnotationThrowsException() {
-        assertThrows(IllegalArgumentException.class, () -> new Table(new POJOWrongGetterNoIDAnnotation()));
+        assertThrows(IllegalArgumentException.class, () -> Table.getIDColumn(POJONoAnnotation.class));
+    }
+
+    @Test
+    public void noGetterMethodForIDThrowsException() {
+        assertThrows(IllegalArgumentException.class, () -> Table.getIDColumn(POJOWrongGetters.class));
+    }
+
+    @Test
+    public void improperlyNamedGetterMethodThrowsException() {
+        assertThrows(IllegalArgumentException.class, () -> (
+                Table.getColumnAndValueList(new POJOWrongGetters())).size()
+        );
+    }
+
+    @Test
+    public void missingColumnNameThrowsException() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            Table.getColumnsWithID(POJOEmpty.class);
+        });
     }
 
     @Test
     public void conditionsAreCorrect() throws InvocationTargetException, IllegalAccessException {
-        Assert.assertEquals(conditions.get(0).getCondition(), table.getIDColumnAndValue().get(0).getCondition());
-        Assert.assertEquals(conditions.get(0).getColumnName(), table.getIDColumnAndValue().get(0).getColumnName());
+        Assert.assertEquals(conditions.get(0).getCondition(), 
+                Table.getIDColumnAndValue(pojo).get(0).getCondition());
+        Assert.assertEquals(conditions.get(0).getColumnName(), 
+                Table.getIDColumnAndValue(pojo).get(0).getColumnName());
     }
 
     @Test
     public void columnValuesAreCorrect() throws InvocationTargetException, IllegalAccessException {
-        Assert.assertEquals(columnValues.get(0).getCondition(), table.getColumnAndValueList().get(0).getCondition());
-        Assert.assertEquals(columnValues.get(0).getColumnName(), table.getColumnAndValueList().get(0).getColumnName());
-        Assert.assertEquals(columnValues.get(1).getCondition(), table.getColumnAndValueList().get(1).getCondition());
-        Assert.assertEquals(columnValues.get(1).getColumnName(), table.getColumnAndValueList().get(1).getColumnName());
-        Assert.assertEquals(columnValues.get(2).getCondition(), table.getColumnAndValueList().get(2).getCondition());
-        Assert.assertEquals(columnValues.get(2).getColumnName(), table.getColumnAndValueList().get(2).getColumnName());
-        Assert.assertEquals(columnValues.get(3).getCondition(), table.getColumnAndValueList().get(3).getCondition());
-        Assert.assertEquals(columnValues.get(3).getColumnName(), table.getColumnAndValueList().get(3).getColumnName());
+        Assert.assertEquals(columnValues.get(0).getCondition(), Table.getColumnAndValueList(pojo).get(0).getCondition());
+        Assert.assertEquals(columnValues.get(0).getColumnName(), Table.getColumnAndValueList(pojo).get(0).getColumnName());
+        Assert.assertEquals(columnValues.get(1).getCondition(), Table.getColumnAndValueList(pojo).get(1).getCondition());
+        Assert.assertEquals(columnValues.get(1).getColumnName(), Table.getColumnAndValueList(pojo).get(1).getColumnName());
+        Assert.assertEquals(columnValues.get(2).getCondition(), Table.getColumnAndValueList(pojo).get(2).getCondition());
+        Assert.assertEquals(columnValues.get(2).getColumnName(), Table.getColumnAndValueList(pojo).get(2).getColumnName());
+        Assert.assertEquals(columnValues.get(3).getCondition(), Table.getColumnAndValueList(pojo).get(3).getCondition());
+        Assert.assertEquals(columnValues.get(3).getColumnName(), Table.getColumnAndValueList(pojo).get(3).getColumnName());
+    }
+
+    @Test
+    public void columnValuesWithIDAreCorrect() throws InvocationTargetException, IllegalAccessException {
+        Assert.assertEquals(columnValuesWithID.get(0).getCondition(), Table.getColumnAndValuesWithID(pojo).get(0).getCondition());
+        Assert.assertEquals(columnValuesWithID.get(0).getColumnName(), Table.getColumnAndValuesWithID(pojo).get(0).getColumnName());
+        Assert.assertEquals(columnValuesWithID.get(1).getCondition(), Table.getColumnAndValuesWithID(pojo).get(1).getCondition());
+        Assert.assertEquals(columnValuesWithID.get(1).getColumnName(), Table.getColumnAndValuesWithID(pojo).get(1).getColumnName());
+        Assert.assertEquals(columnValuesWithID.get(2).getCondition(), Table.getColumnAndValuesWithID(pojo).get(2).getCondition());
+        Assert.assertEquals(columnValuesWithID.get(2).getColumnName(), Table.getColumnAndValuesWithID(pojo).get(2).getColumnName());
+        Assert.assertEquals(columnValuesWithID.get(3).getCondition(), Table.getColumnAndValuesWithID(pojo).get(3).getCondition());
+        Assert.assertEquals(columnValuesWithID.get(3).getColumnName(), Table.getColumnAndValuesWithID(pojo).get(3).getColumnName());
+        Assert.assertEquals(columnValuesWithID.get(4).getCondition(), Table.getColumnAndValuesWithID(pojo).get(4).getCondition());
+        Assert.assertEquals(columnValuesWithID.get(4).getColumnName(), Table.getColumnAndValuesWithID(pojo).get(4).getColumnName());
     }
 }

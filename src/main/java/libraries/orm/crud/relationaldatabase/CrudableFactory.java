@@ -19,12 +19,13 @@ public class CrudableFactory {
                 f.setAccessible(true);
                 if (f.isAnnotationPresent(ColumnName.class)) {
                     ColumnName columnName = f.getAnnotation(ColumnName.class);
-                    if (results.containsKey(columnName.name())) {
-                        Class<?> fieldClass = results.get(columnName.name()).getClass();
+                    String name = columnName.name().toUpperCase();
+                    if (results.containsKey(name)) {
+                        Class<?> fieldClass = results.get(name).getClass();
                         Class<?> resultType = fieldClass.isPrimitive() ? primitivesMap.get(fieldClass) : fieldClass;
                         Class<?> fieldType = f.getType().isPrimitive() ? primitivesMap.get(f.getType()) : f.getType();
                         if (resultType.equals(fieldType)) {
-                            f.set(crudable, results.get(columnName.name()));
+                            f.set(crudable, results.get(name));
                         }
                     }
                 }

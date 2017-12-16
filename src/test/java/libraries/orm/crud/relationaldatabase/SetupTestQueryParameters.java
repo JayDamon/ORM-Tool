@@ -10,7 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 public class SetupTestQueryParameters {
-    protected static Table table;
+    protected static POJOWithAnnotations pojo;
     protected static String[] columnNames;
     protected static ArrayList<Condition> columnNamesAndValues;
     protected static ArrayList<Condition> expectedConditions;
@@ -18,14 +18,13 @@ public class SetupTestQueryParameters {
 
     @BeforeAll
     static void setup() throws InvocationTargetException, IllegalAccessException {
-        POJOWithAnnotations pojo = POJOWithData.getPojoWithAnnotationsPrimary();
+        pojo = POJOWithData.getPojoWithAnnotationsPrimary();
         pojo.setId(2);
 
-        table = new Table(pojo);
-        columnNames = new String[table.getColumnNameList().size()];
-        columnNames = table.getColumnNameList().toArray(columnNames);
+        columnNames = new String[Table.getColumnNameList(pojo.getClass()).size()];
+        columnNames = Table.getColumnNameList(pojo.getClass()).toArray(columnNames);
 
-        columnNamesAndValues = table.getColumnAndValueList();
+        columnNamesAndValues = Table.getColumnAndValueList(pojo);
 
         expectedConditions = new ArrayList<>();
         expectedConditions.add(

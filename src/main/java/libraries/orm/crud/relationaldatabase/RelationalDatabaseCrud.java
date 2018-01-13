@@ -159,7 +159,8 @@ public class RelationalDatabaseCrud<C extends Crudable> extends Crud<C, Connecti
                 Table.getTableName(crudable.getClass()).name(),
                 new WhereClause(
                         conditions
-                )
+                ),
+                "COUNT(1) As ItemExists"
         );
         return exists(query);
     }
@@ -170,7 +171,8 @@ public class RelationalDatabaseCrud<C extends Crudable> extends Crud<C, Connecti
                 Table.getTableName(crudable.getClass()).name(),
                 new WhereClause(
                         Table.getIDColumnAndValue(crudable)
-                )
+                ),
+                "COUNT(1) As ItemExists"
         );
         return exists(query);
     }
@@ -189,7 +191,8 @@ public class RelationalDatabaseCrud<C extends Crudable> extends Crud<C, Connecti
             statement = dataSource.prepareStatement(query.toString());
             ORMPreparedStatement.setParameters(conditions, statement);
             resultSet = statement.executeQuery();
-            exists = resultSet.next();
+            resultSet.next();
+            exists = resultSet.getInt("ItemExists") == 1;
         } catch (SQLException e) {
             exceptions.add(e);
         } finally {

@@ -54,7 +54,7 @@ public class CRUDTest {
         pojoForEntryTwo.setTestDate(new Date(calendar3.getTimeInMillis()));
 
         pojoNotExisting = new POJOWithAnnotations();
-        pojoNotExisting.setId(1);
+        pojoNotExisting.setId(856248);
         pojoNotExisting.setTestString("Test");
         pojoNotExisting.setTestInt(5);
         pojoNotExisting.setTestDouble(5.22);
@@ -184,19 +184,35 @@ public class CRUDTest {
     }
 
     @Test
-    public void pojoExistrsInDatabase() throws InvocationTargetException, IllegalAccessException {
+    public void pojoExistsInDatabase() throws InvocationTargetException, IllegalAccessException {
         Crud<POJOWithAnnotations, Connection> crud = new RelationalDatabaseCrud(pojoForEntryOne.getClass(), connection);
         assertTrue(crud.exists(pojoForEntryOne));
     }
 
     @Test
-    public void pojoExistrsInDatabaseWithConditions() throws InvocationTargetException, IllegalAccessException {
+    public void pojoExistsInDatabaseWithConditions() throws InvocationTargetException, IllegalAccessException {
         ArrayList<Condition> conditions = new ArrayList<>();
         conditions.add(new Condition("testString", "Test"));
         conditions.add(new Condition("testInt", 5));
         conditions.add(new Condition("testDouble", 5.22));
         Crud<POJOWithAnnotations, Connection> crud = new RelationalDatabaseCrud(pojoForEntryOne.getClass(), connection);
         assertTrue(crud.exists(pojoForEntryOne,conditions));
+    }
+
+    @Test
+    public void pojoDoesNotExistsInDatabaseWithConditions() {
+        ArrayList<Condition> conditions = new ArrayList<>();
+        conditions.add(new Condition("testString", "Test"));
+        conditions.add(new Condition("testInt", 4));
+        conditions.add(new Condition("testDouble", 5.22));
+        Crud<POJOWithAnnotations, Connection> crud = new RelationalDatabaseCrud(pojoForEntryOne.getClass(), connection);
+        assertFalse(crud.exists(pojoForEntryOne,conditions));
+    }
+
+    @Test
+    public void pojoDoesNotExistsInDatabase() throws InvocationTargetException, IllegalAccessException {
+        Crud<POJOWithAnnotations, Connection> crud = new RelationalDatabaseCrud(pojoNotExisting.getClass(), connection);
+        assertFalse(crud.exists(pojoNotExisting));
     }
 
     @AfterAll

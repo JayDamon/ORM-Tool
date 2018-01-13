@@ -1,27 +1,25 @@
 package libraries.orm.orm;
 
-import libraries.orm.annotations.ColumnName;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 
 import libraries.orm.utility.StringUtility;
 
 public class Column {
-    private ColumnName columnName;
+    private libraries.orm.annotations.Column column;
     private Method getterMethod;
 
     public <C extends Crudable> Column(Class<C> crudable, Field field) throws NoSuchMethodException {
-        this.setColumnName(field.getAnnotation(ColumnName.class));
+        this.setColumn(field.getAnnotation(libraries.orm.annotations.Column.class));
         this.setGetterMethod(this.createGetterMethod(crudable, field));
     }
 
-    public ColumnName getColumnName() {
-        return this.columnName;
+    public libraries.orm.annotations.Column getColumn() {
+        return this.column;
     }
 
-    public void setColumnName(ColumnName columnName) {
-        this.columnName = columnName;
+    public void setColumn(libraries.orm.annotations.Column column) {
+        this.column = column;
     }
 
     public Method getGetterMethod() {

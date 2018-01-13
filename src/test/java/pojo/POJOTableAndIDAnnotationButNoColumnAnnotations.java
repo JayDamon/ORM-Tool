@@ -1,10 +1,10 @@
 package pojo;
 
 import libraries.orm.annotations.ID;
-import libraries.orm.annotations.TableName;
+import libraries.orm.annotations.Table;
 import libraries.orm.orm.Crudable;
 
-@TableName(
+@Table(
         name = "testTableName"
 )
 public class POJOTableAndIDAnnotationButNoColumnAnnotations implements Crudable {

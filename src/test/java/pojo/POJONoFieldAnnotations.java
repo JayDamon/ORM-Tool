@@ -1,10 +1,10 @@
 package pojo;
 
-import libraries.orm.annotations.TableName;
+import libraries.orm.annotations.Table;
 import java.util.Date;
 import libraries.orm.orm.Crudable;
 
-@TableName(
+@Table(
         name = "testTableName"
 )
 public class POJONoFieldAnnotations implements Crudable {

@@ -7,7 +7,6 @@ import pojo.POJOWithData;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
@@ -44,7 +43,7 @@ public class TableTestPOJOWithAnnotations {
 
     @Test
     public void getIDFromAnnotatedClass() {
-        assertEquals("id", Table.getIDColumn(POJOWithAnnotations.class).getColumnName().name());
+        assertEquals("id", Table.getIDColumn(POJOWithAnnotations.class).getColumn().name());
     }
 
     @Test
@@ -60,7 +59,7 @@ public class TableTestPOJOWithAnnotations {
     @Test
     public void columnListNameExist() {
        for (Column c : Table.getColumns(POJOWithAnnotations.class)) {
-            assertNotNull(c.getColumnName());
+            assertNotNull(c.getColumn());
         }
     }
 

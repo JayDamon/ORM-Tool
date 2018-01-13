@@ -1,9 +1,8 @@
 package libraries.orm.orm;
 
-import libraries.orm.annotations.ColumnName;
+import libraries.orm.annotations.Column;
 import libraries.orm.annotations.DataTable;
 import libraries.orm.annotations.ID;
-import libraries.orm.annotations.TableName;
 import libraries.orm.crud.Condition;
 
 import java.lang.reflect.Field;
@@ -14,20 +13,20 @@ import java.util.*;
 @DataTable
 public class Table {
 
-    public static <C extends Crudable> TableName getTableName(Class<C> crudable) {
-        if (crudable.isAnnotationPresent(TableName.class)) {
-            return crudable.getAnnotation(TableName.class);
+    public static <C extends Crudable> libraries.orm.annotations.Table getTableName(Class<C> crudable) {
+        if (crudable.isAnnotationPresent(libraries.orm.annotations.Table.class)) {
+            return crudable.getAnnotation(libraries.orm.annotations.Table.class);
         } else {
-            throw new IllegalArgumentException(crudable.toString() + " does not have a 'TableName' Annotation");
+            throw new IllegalArgumentException(crudable.toString() + " does not have a 'Table' Annotation");
         }
     }
 
-    public static <C extends Crudable> List<Column> getColumns(Class<C> crudable) {
-        List<Column> names = new ArrayList<>();
+    public static <C extends Crudable> List<libraries.orm.orm.Column> getColumns(Class<C> crudable) {
+        List<libraries.orm.orm.Column> names = new ArrayList<>();
         Field[] fields = crudable.getDeclaredFields();
 
         for (Field f : fields) {
-            if (!f.isAnnotationPresent(ID.class) && f.isAnnotationPresent(ColumnName.class)) {
+            if (!f.isAnnotationPresent(ID.class) && f.isAnnotationPresent(Column.class)) {
                 addColumnToList(names, crudable, f);
             }
         }
@@ -35,16 +34,16 @@ public class Table {
             return names;
         } else {
             throw new IllegalArgumentException(crudable.toString() +
-                    ": There is no ColumnName Field in class or is not annotated properly");
+                    ": There is no Column Field in class or is not annotated properly");
         }
     }
 
-    public static <C extends Crudable> List<Column>getColumnsWithID(Class<C> crudable) {
-        List<Column> names = new ArrayList<>();
+    public static <C extends Crudable> List<libraries.orm.orm.Column>getColumnsWithID(Class<C> crudable) {
+        List<libraries.orm.orm.Column> names = new ArrayList<>();
         Field[] fields = crudable.getDeclaredFields();
 
         for (Field f : fields) {
-            if (f.isAnnotationPresent(ColumnName.class)) {
+            if (f.isAnnotationPresent(Column.class)) {
                 addColumnToList(names, crudable, f);
             }
         }
@@ -52,13 +51,13 @@ public class Table {
             return names;
         } else {
             throw new IllegalArgumentException(crudable.toString() +
-                    ": There is no ColumnName Field in class or is not annotated properly");
+                    ": There is no Column Field in class or is not annotated properly");
         }
     }
 
-    private static <C extends Crudable> void addColumnToList(List<Column> names, Class<C> c, Field f) {
+    private static <C extends Crudable> void addColumnToList(List<libraries.orm.orm.Column> names, Class<C> c, Field f) {
         try {
-            names.add(new Column(c, f));
+            names.add(new libraries.orm.orm.Column(c, f));
         } catch (NoSuchMethodException var5) {
             throw new IllegalArgumentException(c.toString() + ": Getter method does not exist or it is not named properly", var5);
         }
@@ -66,19 +65,19 @@ public class Table {
 
     public static <C extends Crudable> List<String> getColumnNameList(Class<C> crudable) {
         List<String> columnNames = new ArrayList<>();
-        for (Column c : getColumns(crudable)) {
-            columnNames.add(c.getColumnName().name());
+        for (libraries.orm.orm.Column c : getColumns(crudable)) {
+            columnNames.add(c.getColumn().name());
         }
         return columnNames;
     }
 
     public static ArrayList<Condition> getIDColumnAndValue(Crudable crudable) throws InvocationTargetException, IllegalAccessException {
         ArrayList<Condition> idColumnAndValue = new ArrayList<>();
-        Column column = getIDColumn(crudable.getClass());
+        libraries.orm.orm.Column column = getIDColumn(crudable.getClass());
         Method getID = column.getGetterMethod();
         idColumnAndValue.add(
                 new Condition(
-                        column.getColumnName().name(),
+                        column.getColumn().name(),
                         getID.invoke(crudable)
                 ));
         return idColumnAndValue;
@@ -86,11 +85,11 @@ public class Table {
 
     public static ArrayList<Condition> getColumnAndValueList(Crudable crudable) throws InvocationTargetException, IllegalAccessException {
         ArrayList<Condition> columnNameAndValueList = new ArrayList<>();
-        for (Column c : getColumns(crudable.getClass())) {
+        for (libraries.orm.orm.Column c : getColumns(crudable.getClass())) {
             Method getter = c.getGetterMethod();
             columnNameAndValueList.add(
                     new Condition(
-                            c.getColumnName().name(),
+                            c.getColumn().name(),
                             getter.invoke(crudable)
                     )
             );
@@ -100,11 +99,11 @@ public class Table {
 
     public static ArrayList<Condition> getColumnAndValuesWithID(Crudable crudable) throws InvocationTargetException, IllegalAccessException {
         ArrayList<Condition> columnNameAndValueList = new ArrayList<>();
-        for (Column c : getColumnsWithID(crudable.getClass())) {
+        for (libraries.orm.orm.Column c : getColumnsWithID(crudable.getClass())) {
             Method getter = c.getGetterMethod();
             columnNameAndValueList.add(
                     new Condition(
-                            c.getColumnName().name(),
+                            c.getColumn().name(),
                             getter.invoke(crudable)
                     )
             );
@@ -112,11 +111,11 @@ public class Table {
         return columnNameAndValueList;
     }
 
-    public static <C extends Crudable> Column getIDColumn(Class<C> c) {
+    public static <C extends Crudable> libraries.orm.orm.Column getIDColumn(Class<C> c) {
         try {
             for (Field f : c.getDeclaredFields()) {
                 if (f.isAnnotationPresent(ID.class)) {
-                    return new Column(c, f);
+                    return new libraries.orm.orm.Column(c, f);
                 }
             }
         } catch (NoSuchMethodException e) {

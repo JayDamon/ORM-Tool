@@ -1,22 +1,22 @@
 package pojo;
 
-import libraries.orm.annotations.ColumnName;
+import libraries.orm.annotations.Column;
 import libraries.orm.annotations.ID;
-import libraries.orm.annotations.TableName;
+import libraries.orm.annotations.Table;
 import libraries.orm.orm.Crudable;
 
-@TableName(
+@Table(
         name = "testTableName"
 )
 public class POJOWrongGetters implements Crudable {
     @ID
-    @ColumnName(name = "id")
+    @Column(name = "id")
     private int id;
-    @ColumnName(
+    @Column(
             name = "testString"
     )
     private String testString;
-    @ColumnName(
+    @Column(
             name = "testBoolean"
     )
     private boolean testInt;

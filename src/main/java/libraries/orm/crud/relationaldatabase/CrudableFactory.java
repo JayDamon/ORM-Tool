@@ -1,6 +1,6 @@
 package libraries.orm.crud.relationaldatabase;
 
-import libraries.orm.annotations.ColumnName;
+import libraries.orm.annotations.Column;
 import libraries.orm.orm.Crudable;
 
 import java.lang.reflect.Field;
@@ -17,9 +17,9 @@ public class CrudableFactory {
             C crudable = crudableClass.newInstance();
             for (Field f : fields) {
                 f.setAccessible(true);
-                if (f.isAnnotationPresent(ColumnName.class)) {
-                    ColumnName columnName = f.getAnnotation(ColumnName.class);
-                    String name = columnName.name().toUpperCase();
+                if (f.isAnnotationPresent(Column.class)) {
+                    Column column = f.getAnnotation(Column.class);
+                    String name = column.name().toUpperCase();
                     if (results.containsKey(name)) {
                         Class<?> fieldClass = results.get(name).getClass();
                         Class<?> resultType = fieldClass.isPrimitive() ? primitivesMap.get(fieldClass) : fieldClass;

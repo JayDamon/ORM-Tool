@@ -9,9 +9,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.logging.*;
+//import java.util.logging.*;
 
-import static com.sun.xml.internal.ws.spi.db.BindingContextFactory.LOGGER;
+//import static com.sun.xml.internal.ws.spi.db.BindingContextFactory.LOGGER;
 
 @DataTable
 public class Table {
@@ -84,9 +84,9 @@ public class Table {
                             getID.invoke(crudable)
                     );
         } catch (IllegalAccessException e) {
-            LOGGER.log(Level.SEVERE, "Illegal Access Exception Occurred", e);
+//            LOGGER.log(Level.SEVERE, "Illegal Access Exception Occurred", e);
         } catch (InvocationTargetException e) {
-            LOGGER.log(Level.SEVERE, "Invocation Exception Occurred", e);
+//            LOGGER.log(Level.SEVERE, "Invocation Exception Occurred", e);
         }
         return idColumnAndValue;
     }
@@ -103,9 +103,9 @@ public class Table {
                         )
                 );
             } catch (IllegalAccessException e) {
-                LOGGER.log(Level.SEVERE, "Illegal Access Exception Occurred", e);
+//                LOGGER.log(Level.SEVERE, "Illegal Access Exception Occurred", e);
             } catch (InvocationTargetException e) {
-                LOGGER.log(Level.SEVERE, "Invocation Exception Occurred", e);
+//                LOGGER.log(Level.SEVERE, "Invocation Exception Occurred", e);
             }
         }
         return columnNameAndValueList;

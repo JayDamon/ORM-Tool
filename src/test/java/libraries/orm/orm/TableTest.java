@@ -90,9 +90,9 @@ public class TableTest {
     @Test
     public void conditionsAreCorrect() throws InvocationTargetException, IllegalAccessException {
         Assert.assertEquals(conditions.get(0).getCondition(), 
-                Table.getIDColumnAndValue(pojo).get(0).getCondition());
+                Table.getIDColumnAndValue(pojo).getCondition());
         Assert.assertEquals(conditions.get(0).getColumnName(), 
-                Table.getIDColumnAndValue(pojo).get(0).getColumnName());
+                Table.getIDColumnAndValue(pojo).getColumnName());
     }
 
     @Test

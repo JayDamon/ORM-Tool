@@ -10,6 +10,7 @@ import pojo.POJOWithData;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -50,7 +51,11 @@ public class UpdateQueryTest extends SetupTestQueryParameters {
     public void udpateQueryCreatedWithWhereClauseHasExpectedColumns() throws InvocationTargetException, IllegalAccessException {
         ArrayList<Condition> list =  new UpdateQuery(
                 Table.getTableName(POJOWithAnnotations.class).name(),
-                new WhereClause(Table.getIDColumnAndValue(POJOWithData.getPojoWithAnnotationsPrimary())),
+                new WhereClause(
+                        new ArrayList<>(
+                                Collections.singletonList(
+                                        Table.getIDColumnAndValue(POJOWithData.getPojoWithAnnotationsPrimary())
+                                ))),
                 columnNamesAndValues).getColumnNameAndValueList();
         assertEquals(list.get(0).getCondition(),expectedColumnNamesAndValues.get(0).getCondition());
         assertEquals(list.get(0).getColumnName(),expectedColumnNamesAndValues.get(0).getColumnName());

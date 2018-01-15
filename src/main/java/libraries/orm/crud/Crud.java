@@ -7,17 +7,17 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Crud<C extends Crudable, D> {
+public abstract class Crud<C extends Crudable, I> {
 
-    protected D dataSource;
     protected Class<C> crudable;
 
-    public Crud(Class<C> crudable, D dataSource) {
+    public Crud(Class<C> crudable) {
         this.crudable = crudable;
-        this.dataSource = dataSource;
     }
 
     public abstract boolean create(C crudable) throws InvocationTargetException, IllegalAccessException;
+
+    public abstract C findByID(I id);
 
     public abstract List<C> read();
 

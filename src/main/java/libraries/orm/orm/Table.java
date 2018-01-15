@@ -71,15 +71,13 @@ public class Table {
         return columnNames;
     }
 
-    public static ArrayList<Condition> getIDColumnAndValue(Crudable crudable) throws InvocationTargetException, IllegalAccessException {
-        ArrayList<Condition> idColumnAndValue = new ArrayList<>();
+    public static Condition getIDColumnAndValue(Crudable crudable) throws InvocationTargetException, IllegalAccessException {
         libraries.orm.orm.Column column = getIDColumn(crudable.getClass());
         Method getID = column.getGetterMethod();
-        idColumnAndValue.add(
-                new Condition(
+        Condition idColumnAndValue = new Condition(
                         column.getColumn().name(),
                         getID.invoke(crudable)
-                ));
+                );
         return idColumnAndValue;
     }
 

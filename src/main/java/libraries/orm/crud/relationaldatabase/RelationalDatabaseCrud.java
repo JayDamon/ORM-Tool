@@ -6,20 +6,21 @@ import libraries.orm.crud.relationaldatabase.clauses.Clause;
 import libraries.orm.crud.relationaldatabase.clauses.WhereClause;
 import libraries.orm.crud.relationaldatabase.preparedstatement.ORMPreparedStatement;
 import libraries.orm.crud.relationaldatabase.query.*;
+import libraries.orm.orm.Column;
 import libraries.orm.orm.Crudable;
 import libraries.orm.orm.Table;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public class RelationalDatabaseCrud<C extends Crudable> extends Crud<C, Connection> {
+public class RelationalDatabaseCrud<C extends Crudable, I> extends Crud<C, I> {
+
+    public Connection connection;
 
     public RelationalDatabaseCrud(Class<C> crudable, Connection connection) {
-        super(crudable, connection);
+        super(crudable);
+        this.connection = connection;
     }
 
     @Override
@@ -27,6 +28,24 @@ public class RelationalDatabaseCrud<C extends Crudable> extends Crud<C, Connecti
         Query query = new InsertQuery(Table.getTableName(crudable.getClass()).name(), Table.getColumnAndValueList(crudable));
         ArrayList<Condition> conditions = getConditionsFromMap(query);
         return executeUpdateQuery(query, conditions);
+    }
+
+    @Override
+    public C findByID(I id) {
+        Column col = Table.getIDColumn(crudable);
+        Query query = new SelectQuery(
+                Table.getTableName(crudable).name(),
+                new WhereClause(
+                        new ArrayList<>(Collections.singletonList(
+                                new Condition(col.getColumn().name(), id)
+                        ))
+                )
+        );
+        List<C> result = executeSelectQuery(query);
+        if (result.size() > 1) {
+            throw new IllegalArgumentException("Query Returned multiple entries.");
+        }
+        return result.get(0);
     }
 
     @Override
@@ -76,7 +95,7 @@ public class RelationalDatabaseCrud<C extends Crudable> extends Crud<C, Connecti
             conditions.addAll(clause.getConditions());
         }
         try {
-            statement = dataSource.prepareStatement(query.toString());
+            statement = connection.prepareStatement(query.toString());
             if (conditions.size() > 0) ORMPreparedStatement.setParameters(conditions, statement);
             resultSet = statement.executeQuery();
             ResultSetMetaData metaData = resultSet.getMetaData();
@@ -120,8 +139,10 @@ public class RelationalDatabaseCrud<C extends Crudable> extends Crud<C, Connecti
         Query query = new UpdateQuery(
                 Table.getTableName(crudable.getClass()).name(),
                 new WhereClause(
-                        Table.getIDColumnAndValue(crudable)
-                ),
+                        new ArrayList<>(
+                                    Collections.singletonList(
+                                        Table.getIDColumnAndValue(crudable)
+                                ))),
                 Table.getColumnAndValueList(crudable)
         );
         ArrayList<Condition> conditionsAndValueList = getConditionsFromMap(query);
@@ -146,8 +167,10 @@ public class RelationalDatabaseCrud<C extends Crudable> extends Crud<C, Connecti
         Query query = new DeleteQuery(
                 Table.getTableName(crudable.getClass()).name(),
                 new WhereClause(
-                        Table.getIDColumnAndValue(crudable)
-                )
+                        new ArrayList<>(
+                                Collections.singletonList(
+                                    Table.getIDColumnAndValue(crudable)
+                                )))
         );
         ArrayList<Condition> conditions = getConditionsFromMap(query);
         return executeUpdateQuery(query, conditions);
@@ -170,8 +193,10 @@ public class RelationalDatabaseCrud<C extends Crudable> extends Crud<C, Connecti
         Query query = new SelectQuery(
                 Table.getTableName(crudable.getClass()).name(),
                 new WhereClause(
-                        Table.getIDColumnAndValue(crudable)
-                ),
+                        new ArrayList<>(
+                                Collections.singletonList(
+                                    Table.getIDColumnAndValue(crudable)
+                                ))),
                 "COUNT(1) As ItemExists"
         );
         return exists(query);
@@ -188,7 +213,7 @@ public class RelationalDatabaseCrud<C extends Crudable> extends Crud<C, Connecti
         }
         boolean exists = false;
         try {
-            statement = dataSource.prepareStatement(query.toString());
+            statement = connection.prepareStatement(query.toString());
             ORMPreparedStatement.setParameters(conditions, statement);
             resultSet = statement.executeQuery();
             resultSet.next();
@@ -228,7 +253,7 @@ public class RelationalDatabaseCrud<C extends Crudable> extends Crud<C, Connecti
 
     private boolean executeUpdateQuery(Query query, ArrayList<Condition> conditions) {
         try (
-                PreparedStatement statement = dataSource.prepareStatement(query.toString())
+                PreparedStatement statement = connection.prepareStatement(query.toString())
         ) {
             ORMPreparedStatement.setParameters(conditions, statement);
             return statement.executeUpdate() == 1;

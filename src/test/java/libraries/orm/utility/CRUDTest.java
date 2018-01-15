@@ -84,9 +84,14 @@ public class CRUDTest {
         CreateTestDatabaseTable.createDatabaseTable(connection);
     }
 
+    @AfterAll
+    public static void teardown() throws SQLException {
+        connection.close();
+    }
+
     @Test
     public void insertPojoIntoTestTable() throws InvocationTargetException, IllegalAccessException, SQLException {
-        Crud<POJOWithAnnotations, Connection> crud = new RelationalDatabaseCrud(pojo.getClass(), connection);
+        Crud<POJOWithAnnotations, Integer> crud = new RelationalDatabaseCrud(pojo.getClass(), connection);
         assertTrue(crud.create(pojo));
 
         String sql = "SELECT * FROM testTableName " +
@@ -98,7 +103,7 @@ public class CRUDTest {
 
     @Test
     public void updatePojoInTestTable() throws InvocationTargetException, IllegalAccessException, SQLException {
-        Crud<POJOWithAnnotations, Connection> crud = new RelationalDatabaseCrud(pojo.getClass(), connection);
+        Crud<POJOWithAnnotations, Integer> crud = new RelationalDatabaseCrud(pojo.getClass(), connection);
         assertTrue(crud.update(pojo));
 
         String sql = "SELECT * FROM testTableName " +
@@ -111,7 +116,7 @@ public class CRUDTest {
 
     @Test
     public void updatePojoInTestTableWithConditions() throws InvocationTargetException, IllegalAccessException, SQLException {
-        Crud<POJOWithAnnotations, Connection> crud = new RelationalDatabaseCrud(pojoForEntryTwo.getClass(), connection);
+        Crud<POJOWithAnnotations, Integer> crud = new RelationalDatabaseCrud(pojoForEntryTwo.getClass(), connection);
         ArrayList<Condition> conditions = new ArrayList<>();
         conditions.add(new Condition("testString", "Test2"));
         conditions.add(new Condition("testInt", 52));
@@ -128,7 +133,7 @@ public class CRUDTest {
 
     @Test
     public void selectQueryReturnsSingleResult() {
-        Crud<POJOWithAnnotations, Connection> crud = new RelationalDatabaseCrud(pojoForEntryOne.getClass(), connection);
+        Crud<POJOWithAnnotations, Integer> crud = new RelationalDatabaseCrud(pojoForEntryOne.getClass(), connection);
         List<POJOWithAnnotations> actualList = crud.read();
         assertThat(actualList, Matchers.not(IsEmptyCollection.empty()));
         assertThat(actualList, hasSize(2));
@@ -136,7 +141,7 @@ public class CRUDTest {
 
     @Test
     public void selectQueryWithColumnsReturnsResult() {
-        Crud<POJOWithAnnotations, Connection> crud = new RelationalDatabaseCrud(pojoForEntryOne.getClass(), connection);
+        Crud<POJOWithAnnotations, Integer> crud = new RelationalDatabaseCrud(pojoForEntryOne.getClass(), connection);
         List<POJOWithAnnotations> actualList = crud.read("testString", "testInt");
         assertThat(actualList, Matchers.not(IsEmptyCollection.empty()));
         assertEquals(0.0d, actualList.get(0).getTestDouble(), 5.22);
@@ -150,7 +155,7 @@ public class CRUDTest {
         conditions.add(new Condition("testString", "Test"));
         conditions.add(new Condition("testInt", 5));
         conditions.add(new Condition("testDouble", 5.22));
-        Crud<POJOWithAnnotations, Connection> crud = new RelationalDatabaseCrud(pojoForEntryOne.getClass(), connection);
+        Crud<POJOWithAnnotations, Integer> crud = new RelationalDatabaseCrud(pojoForEntryOne.getClass(), connection);
         List<POJOWithAnnotations> actualList = crud.read(conditions);
         assertThat(actualList, Matchers.not(IsEmptyCollection.empty()));
         assertThat(actualList, hasSize(1));
@@ -162,7 +167,7 @@ public class CRUDTest {
         conditions.add(new Condition("testString", "Test"));
         conditions.add(new Condition("testInt", 5));
         conditions.add(new Condition("testDouble", 5.22));
-        Crud<POJOWithAnnotations, Connection> crud = new RelationalDatabaseCrud(POJOWithAnnotations.class, connection);
+        Crud<POJOWithAnnotations, Integer> crud = new RelationalDatabaseCrud(POJOWithAnnotations.class, connection);
         List<POJOWithAnnotations> actualList = crud.read(conditions, "testString", "testInt");
         assertThat(actualList, Matchers.not(IsEmptyCollection.empty()));
         assertThat(actualList, hasSize(1));
@@ -172,7 +177,7 @@ public class CRUDTest {
 
     @Test
     public void deleteQueryRemovesItem() throws SQLException, InvocationTargetException, IllegalAccessException {
-        Crud<POJOWithAnnotations, Connection> crud = new RelationalDatabaseCrud(pojoForEntryOne.getClass(), connection);
+        Crud<POJOWithAnnotations, Integer> crud = new RelationalDatabaseCrud(pojoForEntryOne.getClass(), connection);
         assertTrue(crud.delete(pojoForEntryOne));
 
         String sql = "SELECT * FROM testTableName " +
@@ -185,7 +190,7 @@ public class CRUDTest {
 
     @Test
     public void pojoExistsInDatabase() throws InvocationTargetException, IllegalAccessException {
-        Crud<POJOWithAnnotations, Connection> crud = new RelationalDatabaseCrud(pojoForEntryOne.getClass(), connection);
+        Crud<POJOWithAnnotations, Integer> crud = new RelationalDatabaseCrud(pojoForEntryOne.getClass(), connection);
         assertTrue(crud.exists(pojoForEntryOne));
     }
 
@@ -195,7 +200,7 @@ public class CRUDTest {
         conditions.add(new Condition("testString", "Test"));
         conditions.add(new Condition("testInt", 5));
         conditions.add(new Condition("testDouble", 5.22));
-        Crud<POJOWithAnnotations, Connection> crud = new RelationalDatabaseCrud(pojoForEntryOne.getClass(), connection);
+        Crud<POJOWithAnnotations, Integer> crud = new RelationalDatabaseCrud(pojoForEntryOne.getClass(), connection);
         assertTrue(crud.exists(pojoForEntryOne,conditions));
     }
 
@@ -205,18 +210,19 @@ public class CRUDTest {
         conditions.add(new Condition("testString", "Test"));
         conditions.add(new Condition("testInt", 4));
         conditions.add(new Condition("testDouble", 5.22));
-        Crud<POJOWithAnnotations, Connection> crud = new RelationalDatabaseCrud(pojoForEntryOne.getClass(), connection);
+        Crud<POJOWithAnnotations, Integer> crud = new RelationalDatabaseCrud(pojoForEntryOne.getClass(), connection);
         assertFalse(crud.exists(pojoForEntryOne,conditions));
     }
 
     @Test
     public void pojoDoesNotExistsInDatabase() throws InvocationTargetException, IllegalAccessException {
-        Crud<POJOWithAnnotations, Connection> crud = new RelationalDatabaseCrud(pojoNotExisting.getClass(), connection);
+        Crud<POJOWithAnnotations, Integer> crud = new RelationalDatabaseCrud(pojoNotExisting.getClass(), connection);
         assertFalse(crud.exists(pojoNotExisting));
     }
 
-    @AfterAll
-    public static void teardown() throws SQLException {
-        connection.close();
+    @Test
+    public void findPOJOByID_returnsPOJO() {
+        Crud<POJOWithAnnotations, Integer> crud = new RelationalDatabaseCrud(pojoForEntryOne.getClass(), connection);
+        assertEquals("Test", crud.findByID(1).getTestString());
     }
 }

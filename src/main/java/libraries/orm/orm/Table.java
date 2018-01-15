@@ -9,6 +9,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.logging.*;
+
+import static com.sun.xml.internal.ws.spi.db.BindingContextFactory.LOGGER;
 
 @DataTable
 public class Table {
@@ -71,26 +74,39 @@ public class Table {
         return columnNames;
     }
 
-    public static Condition getIDColumnAndValue(Crudable crudable) throws InvocationTargetException, IllegalAccessException {
+    public static Condition getIDColumnAndValue(Crudable crudable){
         libraries.orm.orm.Column column = getIDColumn(crudable.getClass());
         Method getID = column.getGetterMethod();
-        Condition idColumnAndValue = new Condition(
-                        column.getColumn().name(),
-                        getID.invoke(crudable)
-                );
+        Condition idColumnAndValue = null;
+        try {
+            idColumnAndValue = new Condition(
+                            column.getColumn().name(),
+                            getID.invoke(crudable)
+                    );
+        } catch (IllegalAccessException e) {
+            LOGGER.log(Level.SEVERE, "Illegal Access Exception Occurred", e);
+        } catch (InvocationTargetException e) {
+            LOGGER.log(Level.SEVERE, "Invocation Exception Occurred", e);
+        }
         return idColumnAndValue;
     }
 
-    public static ArrayList<Condition> getColumnAndValueList(Crudable crudable) throws InvocationTargetException, IllegalAccessException {
+    public static ArrayList<Condition> getColumnAndValueList(Crudable crudable) {
         ArrayList<Condition> columnNameAndValueList = new ArrayList<>();
         for (libraries.orm.orm.Column c : getColumns(crudable.getClass())) {
             Method getter = c.getGetterMethod();
-            columnNameAndValueList.add(
-                    new Condition(
-                            c.getColumn().name(),
-                            getter.invoke(crudable)
-                    )
-            );
+            try {
+                columnNameAndValueList.add(
+                        new Condition(
+                                c.getColumn().name(),
+                                getter.invoke(crudable)
+                        )
+                );
+            } catch (IllegalAccessException e) {
+                LOGGER.log(Level.SEVERE, "Illegal Access Exception Occurred", e);
+            } catch (InvocationTargetException e) {
+                LOGGER.log(Level.SEVERE, "Invocation Exception Occurred", e);
+            }
         }
         return columnNameAndValueList;
     }

@@ -24,7 +24,7 @@ public class RelationalDatabaseCrud<C extends Crudable, I> extends Crud<C, I> {
     }
 
     @Override
-    public boolean create(C crudable) throws InvocationTargetException, IllegalAccessException {
+    public boolean create(C crudable) {
         Query query = new InsertQuery(Table.getTableName(crudable.getClass()).name(), Table.getColumnAndValueList(crudable));
         ArrayList<Condition> conditions = getConditionsFromMap(query);
         return executeUpdateQuery(query, conditions);
@@ -135,7 +135,7 @@ public class RelationalDatabaseCrud<C extends Crudable, I> extends Crud<C, I> {
     }
 
     @Override
-    public boolean update(C crudable) throws InvocationTargetException, IllegalAccessException {
+    public boolean update(C crudable) {
         Query query = new UpdateQuery(
                 Table.getTableName(crudable.getClass()).name(),
                 new WhereClause(
@@ -150,7 +150,7 @@ public class RelationalDatabaseCrud<C extends Crudable, I> extends Crud<C, I> {
     }
 
     @Override
-    public boolean update(C crudable, ArrayList<Condition> conditions) throws InvocationTargetException, IllegalAccessException {
+    public boolean update(C crudable, ArrayList<Condition> conditions) {
         Query query = new UpdateQuery(
                 Table.getTableName(crudable.getClass()).name(),
                 new WhereClause(
@@ -163,7 +163,7 @@ public class RelationalDatabaseCrud<C extends Crudable, I> extends Crud<C, I> {
     }
 
     @Override
-    public boolean delete(C crudable) throws InvocationTargetException, IllegalAccessException {
+    public boolean delete(C crudable) {
         Query query = new DeleteQuery(
                 Table.getTableName(crudable.getClass()).name(),
                 new WhereClause(
@@ -189,7 +189,7 @@ public class RelationalDatabaseCrud<C extends Crudable, I> extends Crud<C, I> {
     }
 
     @Override
-    public boolean exists(C crudable) throws InvocationTargetException, IllegalAccessException {
+    public boolean exists(C crudable) {
         Query query = new SelectQuery(
                 Table.getTableName(crudable.getClass()).name(),
                 new WhereClause(

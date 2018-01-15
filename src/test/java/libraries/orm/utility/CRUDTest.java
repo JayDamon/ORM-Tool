@@ -90,7 +90,7 @@ public class CRUDTest {
     }
 
     @Test
-    public void insertPojoIntoTestTable() throws InvocationTargetException, IllegalAccessException, SQLException {
+    public void insertPojoIntoTestTable() throws SQLException {
         Crud<POJOWithAnnotations, Integer> crud = new RelationalDatabaseCrud(pojo.getClass(), connection);
         assertTrue(crud.create(pojo));
 
@@ -102,7 +102,7 @@ public class CRUDTest {
     }
 
     @Test
-    public void updatePojoInTestTable() throws InvocationTargetException, IllegalAccessException, SQLException {
+    public void updatePojoInTestTable() throws SQLException {
         Crud<POJOWithAnnotations, Integer> crud = new RelationalDatabaseCrud(pojo.getClass(), connection);
         assertTrue(crud.update(pojo));
 
@@ -115,7 +115,7 @@ public class CRUDTest {
     }
 
     @Test
-    public void updatePojoInTestTableWithConditions() throws InvocationTargetException, IllegalAccessException, SQLException {
+    public void updatePojoInTestTableWithConditions() throws SQLException {
         Crud<POJOWithAnnotations, Integer> crud = new RelationalDatabaseCrud(pojoForEntryTwo.getClass(), connection);
         ArrayList<Condition> conditions = new ArrayList<>();
         conditions.add(new Condition("testString", "Test2"));
@@ -176,7 +176,7 @@ public class CRUDTest {
     }
 
     @Test
-    public void deleteQueryRemovesItem() throws SQLException, InvocationTargetException, IllegalAccessException {
+    public void deleteQueryRemovesItem() throws SQLException {
         Crud<POJOWithAnnotations, Integer> crud = new RelationalDatabaseCrud(pojoForEntryOne.getClass(), connection);
         assertTrue(crud.delete(pojoForEntryOne));
 

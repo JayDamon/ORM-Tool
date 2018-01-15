@@ -37,4 +37,13 @@ public class CrudableFactoryTest {
     public void getCrudableDoubleFromMap() {
         assertEquals(2.2, resultPojo.getTestDouble());
     }
+
+    @Test void whenNumericValueNull_setToDefaultValue() {
+        Map<String, Object> resultSet = new HashMap<>();
+        resultSet.put("TESTSTRING", "string value");
+        resultSet.put("TESTINT", null);
+        resultSet.put("TESTDOUBLE", null);
+        assertEquals(0, CrudableFactory.getCrudable(POJOWithAnnotations.class, resultSet).getTestInt());
+        assertEquals(0D, CrudableFactory.getCrudable(POJOWithAnnotations.class, resultSet).getTestDouble());
+    }
 }

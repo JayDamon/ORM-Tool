@@ -29,7 +29,7 @@ public class Table {
         Field[] fields = crudable.getDeclaredFields();
 
         for (Field f : fields) {
-            if (!f.isAnnotationPresent(ID.class) && f.isAnnotationPresent(Column.class)) {
+            if ((!f.isAnnotationPresent(ID.class) || f.getAnnotation(ID.class).include()) && f.isAnnotationPresent(Column.class)) {
                 addColumnToList(names, crudable, f);
             }
         }

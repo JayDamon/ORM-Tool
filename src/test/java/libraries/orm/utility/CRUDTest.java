@@ -9,6 +9,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import pojo.POJOIncludeID;
 import pojo.POJOWithAnnotations;
 import pojo.POJOWithData;
 
@@ -30,6 +31,8 @@ public class CRUDTest {
     static POJOWithAnnotations pojoForEntryOne;
     static POJOWithAnnotations pojoNotExisting;
     static POJOWithAnnotations pojoForEntryTwo;
+    static POJOWithAnnotations pojoForEntryThree;
+    static POJOIncludeID pojoIncludeID;
 
     @BeforeAll
     public static void setup() {
@@ -53,6 +56,15 @@ public class CRUDTest {
         calendar3.set(2017, Calendar.MAY, 33);
         pojoForEntryTwo.setTestDate(new Date(calendar3.getTimeInMillis()));
 
+        pojoForEntryThree = new POJOWithAnnotations();
+        pojoForEntryThree.setId(3);
+        pojoForEntryThree.setTestString("Test6");
+        pojoForEntryThree.setTestInt(53);
+        pojoForEntryThree.setTestDouble(53.33);
+        Calendar calendar4 = Calendar.getInstance();
+        calendar3.set(2017, Calendar.MAY, 33);
+        pojoForEntryThree.setTestDate(new Date(calendar4.getTimeInMillis()));
+
         pojoNotExisting = new POJOWithAnnotations();
         pojoNotExisting.setId(856248);
         pojoNotExisting.setTestString("Test");
@@ -61,6 +73,15 @@ public class CRUDTest {
         Calendar calendar1 = Calendar.getInstance();
         calendar1.set(2017, Calendar.MAY, 20);
         pojoNotExisting.setTestDate(new Date(calendar1.getTimeInMillis()));
+
+        pojoIncludeID = new POJOIncludeID();
+        pojoIncludeID.setId(100);
+        pojoIncludeID.setTestString("Test6");
+        pojoIncludeID.setTestInt(53);
+        pojoIncludeID.setTestDouble(53.33);
+        Calendar calendar5 = Calendar.getInstance();
+        calendar3.set(2017, Calendar.MAY, 33);
+        pojoIncludeID.setTestDate(new Date(calendar5.getTimeInMillis()));
 
         expectedSelect = new ArrayList<>();
         expectedSelect.add(new Condition("ID", 1));
@@ -102,16 +123,25 @@ public class CRUDTest {
     }
 
     @Test
+    public void whenInsertPojo_includeID() {
+        Crud<POJOIncludeID, Integer> crud = new RelationalDatabaseCrud(pojo.getClass(), connection);
+        assertTrue(crud.create(pojoIncludeID));
+        assertTrue(crud.exists(pojoIncludeID));
+        assertTrue(crud.delete(pojoIncludeID));
+    }
+
+    @Test
     public void updatePojoInTestTable() throws SQLException {
         Crud<POJOWithAnnotations, Integer> crud = new RelationalDatabaseCrud(pojo.getClass(), connection);
-        assertTrue(crud.update(pojo));
+        assertTrue(crud.update(pojoForEntryThree));
 
         String sql = "SELECT * FROM testTableName " +
-                "WHERE id = 1 AND testString = 'TestValue' " +
-                "AND testInt = 20 AND testDouble = 30.0 AND testDate = '2017-11-05'";
+                "WHERE id = 3 AND testString = 'Test6' " +
+                "AND testInt = 53 AND testDouble = 53.33";
         PreparedStatement statement = connection.prepareStatement(sql);
         ResultSet resultSet = statement.executeQuery();
         assertTrue(resultSet.next());
+        assertEquals("Test6", resultSet.getString("testString"));
     }
 
     @Test
@@ -136,7 +166,7 @@ public class CRUDTest {
         Crud<POJOWithAnnotations, Integer> crud = new RelationalDatabaseCrud(pojoForEntryOne.getClass(), connection);
         List<POJOWithAnnotations> actualList = crud.read();
         assertThat(actualList, Matchers.not(IsEmptyCollection.empty()));
-        assertThat(actualList, hasSize(2));
+        assertThat(actualList, hasSize(3));
     }
 
     @Test

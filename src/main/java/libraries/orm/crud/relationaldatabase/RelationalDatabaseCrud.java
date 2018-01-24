@@ -272,7 +272,7 @@ public class RelationalDatabaseCrud<C extends Crudable, I> extends Crud<C, I> {
                 for (Field f : fields) {
                     if (f.isAnnotationPresent(ID.class)) {
                         f.setAccessible(true);
-                        setField(f, generatedKeys.getObject(1), crudable);
+                        setField(f, generatedKeys, crudable);
                         idSet = true;
                     }
                 }
@@ -287,40 +287,38 @@ public class RelationalDatabaseCrud<C extends Crudable, I> extends Crud<C, I> {
         }
     }
 
-    private void setField(Field field, Object value, Crudable c) throws IllegalAccessException {
+    private void setField(Field field, ResultSet rs, Crudable c) throws IllegalAccessException, SQLException {
         Class<?> type = field.getType();
+        //ToDo break out primative and object
         if (type == Boolean.class || type == boolean.class) {
-            field.setBoolean(c, Boolean.valueOf(value.toString()));
+            field.setBoolean(c, rs.getBoolean(1));
         }
         else if (type == Byte.class || type == byte.class) {
-            field.setByte(c, Byte.valueOf(value.toString()));
+            field.setByte(c, rs.getByte(1));
         }
         else if (type == Short.class || type == short.class) {
-            field.setShort(c, Short.valueOf(value.toString()));
-        }
-        else if (type == Character.class || type == char.class) {
-            field.setChar(c, (char)value);
+            field.setShort(c, rs.getShort(1));
         }
         else if (type == Long.class || type == long.class) {
-            field.setLong(c, Long.valueOf(value.toString()));
+            field.setLong(c, rs.getLong(1));
         }
         else if (type == Float.class || type == float.class) {
-            field.setFloat(c, Float.valueOf(value.toString()));
+            field.setFloat(c, rs.getFloat(1));
         }
         else if (type == Integer.class || type == int.class) {
-            field.setInt(c, Integer.valueOf(value.toString()));
+            field.setInt(c, rs.getInt(1));
         }
         else if (type == Double.class || type == double.class) {
-            field.setDouble(c, Integer.valueOf(value.toString()));
+            field.setDouble(c, rs.getDouble(1));
         }
         else if (type == String.class) {
-            field.set(c, String.valueOf(value));
+            field.set(c, rs.getString(1));
         }
         else if (type == BigDecimal.class) {
-            field.set(c, new BigDecimal(value.toString()));
+            field.set(c, rs.getBigDecimal(1));
         }
         else if (type == BigInteger.class) {
-            field.set(c, new BigInteger(value.toString()));
+            field.set(c, rs.getInt(1));
         }
     }
 

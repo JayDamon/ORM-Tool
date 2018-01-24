@@ -124,7 +124,7 @@ public class CRUDTest {
 
     @Test
     public void whenInsertPojo_includeID() {
-        Crud<POJOIncludeID, Integer> crud = new RelationalDatabaseCrud(pojo.getClass(), connection);
+        Crud<POJOIncludeID, Integer> crud = new RelationalDatabaseCrud(pojoIncludeID.getClass(), connection);
         assertTrue(crud.create(pojoIncludeID));
         assertTrue(crud.exists(pojoIncludeID));
         assertTrue(crud.delete(pojoIncludeID));
@@ -254,5 +254,20 @@ public class CRUDTest {
     public void findPOJOByID_returnsPOJO() {
         Crud<POJOWithAnnotations, Integer> crud = new RelationalDatabaseCrud(pojoForEntryOne.getClass(), connection);
         assertEquals("Test", crud.findByID(1).getTestString());
+    }
+
+    @Test
+    public void whenInsertPojo_returnID() {
+        POJOWithAnnotations pojo = new POJOWithAnnotations();
+        pojo = new POJOWithAnnotations();
+        pojo.setTestString("Test");
+        pojo.setTestInt(5);
+        pojo.setTestDouble(5.22);
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2017, Calendar.MAY, 20);
+        pojo.setTestDate(new Date(calendar.getTimeInMillis()));
+        Crud<POJOWithAnnotations, Connection> crud = new RelationalDatabaseCrud<>(POJOWithAnnotations.class, connection);
+        crud.create(pojo);
+        assertNotEquals(0, pojo.getId());
     }
 }

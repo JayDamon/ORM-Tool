@@ -1,5 +1,7 @@
 package libraries.orm.crud.relationaldatabase;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
+import libraries.orm.annotations.ID;
 import libraries.orm.crud.Condition;
 import libraries.orm.crud.Crud;
 import libraries.orm.crud.relationaldatabase.clauses.Clause;
@@ -10,9 +12,13 @@ import libraries.orm.orm.Column;
 import libraries.orm.orm.Crudable;
 import libraries.orm.orm.Table;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class RelationalDatabaseCrud<C extends Crudable, I> extends Crud<C, I> {
 
@@ -27,7 +33,7 @@ public class RelationalDatabaseCrud<C extends Crudable, I> extends Crud<C, I> {
     public boolean create(C crudable) {
         Query query = new InsertQuery(Table.getTableName(crudable.getClass()).name(), Table.getColumnAndValueList(crudable));
         ArrayList<Condition> conditions = getConditionsFromMap(query);
-        return executeUpdateQuery(query, conditions);
+        return executeInsertQuery(query, conditions, crudable);
     }
 
     @Override
@@ -249,6 +255,73 @@ public class RelationalDatabaseCrud<C extends Crudable, I> extends Crud<C, I> {
             conditions.addAll(whereClause.getConditions());
         }
         return conditions;
+    }
+
+    private boolean executeInsertQuery(Query query, ArrayList<Condition> conditions, C crudable) {
+        PreparedStatement statement;
+        ResultSet resultSet;
+        try {
+            statement = connection.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);
+            ORMPreparedStatement.setParameters(conditions, statement);
+            int affectedRows = statement.executeUpdate();
+
+            ResultSet generatedKeys = statement.getGeneratedKeys();
+            boolean idSet = false;
+            if (generatedKeys.next()) {
+                Field[] fields = crudable.getClass().getDeclaredFields();
+                for (Field f : fields) {
+                    if (f.isAnnotationPresent(ID.class)) {
+                        f.setAccessible(true);
+                        setField(f, generatedKeys.getObject(1), crudable);
+                        idSet = true;
+                    }
+                }
+            }
+            return affectedRows != 0 && idSet;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private void setField(Field field, Object value, Crudable c) throws IllegalAccessException {
+        Class<?> type = field.getType();
+        if (type == Boolean.class || type == boolean.class) {
+            field.setBoolean(c, Boolean.valueOf(value.toString()));
+        }
+        else if (type == Byte.class || type == byte.class) {
+            field.setByte(c, Byte.valueOf(value.toString()));
+        }
+        else if (type == Short.class || type == short.class) {
+            field.setShort(c, Short.valueOf(value.toString()));
+        }
+        else if (type == Character.class || type == char.class) {
+            field.setChar(c, (char)value);
+        }
+        else if (type == Long.class || type == long.class) {
+            field.setLong(c, Long.valueOf(value.toString()));
+        }
+        else if (type == Float.class || type == float.class) {
+            field.setFloat(c, Float.valueOf(value.toString()));
+        }
+        else if (type == Integer.class || type == int.class) {
+            field.setInt(c, Integer.valueOf(value.toString()));
+        }
+        else if (type == Double.class || type == double.class) {
+            field.setDouble(c, Integer.valueOf(value.toString()));
+        }
+        else if (type == String.class) {
+            field.set(c, String.valueOf(value));
+        }
+        else if (type == BigDecimal.class) {
+            field.set(c, new BigDecimal(value.toString()));
+        }
+        else if (type == BigInteger.class) {
+            field.set(c, new BigInteger(value.toString()));
+        }
     }
 
     private boolean executeUpdateQuery(Query query, ArrayList<Condition> conditions) {

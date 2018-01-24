@@ -9,6 +9,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import pojo.POJOBoxed;
 import pojo.POJOIncludeID;
 import pojo.POJOWithAnnotations;
 import pojo.POJOWithData;
@@ -258,16 +259,15 @@ public class CRUDTest {
 
     @Test
     public void whenInsertPojo_returnID() {
-        POJOWithAnnotations pojo = new POJOWithAnnotations();
-        pojo = new POJOWithAnnotations();
+        POJOBoxed pojo = new POJOBoxed();
         pojo.setTestString("Test");
         pojo.setTestInt(5);
         pojo.setTestDouble(5.22);
         Calendar calendar = Calendar.getInstance();
         calendar.set(2017, Calendar.MAY, 20);
         pojo.setTestDate(new Date(calendar.getTimeInMillis()));
-        Crud<POJOWithAnnotations, Connection> crud = new RelationalDatabaseCrud<>(POJOWithAnnotations.class, connection);
+        Crud<POJOBoxed, Connection> crud = new RelationalDatabaseCrud<>(POJOBoxed.class, connection);
         crud.create(pojo);
-        assertNotEquals(0, pojo.getId());
+        assertNotEquals(0, pojo.getId().intValue());
     }
 }

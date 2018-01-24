@@ -314,25 +314,25 @@ public class RelationalDatabaseCrud<C extends Crudable, I> extends Crud<C, I> {
             }
         } else {
             if (type == Boolean.class) {
-                field.setBoolean(c, Boolean.valueOf(rs.getBoolean(1)));
+                field.set(c, rs.getBoolean(1));
             }
             else if (type == Byte.class) {
-                field.setByte(c, rs.getByte(1));
+                field.set(c, rs.getByte(1));
             }
             else if (type == Short.class) {
-                field.setShort(c, Short.valueOf(rs.getShort(1)));
+                field.set(c, rs.getShort(1));
             }
             else if (type == Long.class) {
-                field.setLong(c, Long.valueOf(rs.getLong(1)));
+                field.set(c, rs.getLong(1));
             }
             else if (type == Float.class) {
-                field.setFloat(c, Float.valueOf(rs.getFloat(1)));
+                field.set(c, rs.getFloat(1));
             }
             else if (type == Integer.class) {
-                field.setInt(c, Integer.valueOf(rs.getInt(1)));
+                field.set(c, rs.getInt(1));
             }
             else if (type == Double.class) {
-                field.setDouble(c, rs.getDouble(1));
+                field.set(c, rs.getDouble(1));
             }
             else if (type == String.class) {
                 field.set(c, rs.getString(1));

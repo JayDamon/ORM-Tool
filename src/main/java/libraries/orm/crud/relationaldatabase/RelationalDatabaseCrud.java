@@ -50,6 +50,8 @@ public class RelationalDatabaseCrud<C extends Crudable, I> extends Crud<C, I> {
         List<C> result = executeSelectQuery(query);
         if (result.size() > 1) {
             throw new IllegalArgumentException("Query Returned multiple entries.");
+        } else if (result.size() <= 0) {
+            return null;
         }
         return result.get(0);
     }

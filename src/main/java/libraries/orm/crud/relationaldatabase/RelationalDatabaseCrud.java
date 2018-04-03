@@ -1,6 +1,5 @@
 package libraries.orm.crud.relationaldatabase;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import libraries.orm.annotations.ID;
 import libraries.orm.crud.Condition;
 import libraries.orm.crud.Crud;
@@ -13,12 +12,10 @@ import libraries.orm.orm.Crudable;
 import libraries.orm.orm.Table;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.*;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class RelationalDatabaseCrud<C extends Crudable, I> extends Crud<C, I> {
 

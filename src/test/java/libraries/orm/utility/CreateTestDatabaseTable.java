@@ -8,10 +8,57 @@ public class CreateTestDatabaseTable {
 
     public static void createDatabaseTable(Connection connection) {
         dropTableIfExists(connection);
+        dropDropTableIfExists(connection);
+        dropCreateTableIfExists(connection);
         insertTable(connection);
         addEntry(connection);
         addEntryTwo(connection);
         addEntryThree(connection);
+        insertTableToDrop(connection);
+    }
+
+    private static void dropCreateTableIfExists(Connection connection) {
+        String dropQuery = "DROP TABLE IF EXISTS testCreateTableName;";
+        try (
+                PreparedStatement dropPreparedStatement = connection.prepareStatement(dropQuery);
+        ) {
+            dropPreparedStatement.executeUpdate();
+            dropPreparedStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void dropDropTableIfExists(Connection connection) {
+        String dropQuery = "DROP TABLE IF EXISTS testDropTableName;";
+        try (
+                PreparedStatement dropPreparedStatement = connection.prepareStatement(dropQuery);
+        ) {
+            dropPreparedStatement.executeUpdate();
+            dropPreparedStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void insertTableToDrop(Connection connection) {
+        String createQuery = "CREATE TABLE testDropTableName (" +
+                "id int(11) NOT NULL AUTO_INCREMENT," +
+                "testString varchar(50)," +
+                "testInt int(10)," +
+                "testDouble Double," +
+                "testDate DATE," +
+                "PRIMARY KEY (id)" +
+                ");";
+
+        try (
+                PreparedStatement createPreparedStatement = connection.prepareStatement(createQuery);
+        ) {
+            createPreparedStatement.executeUpdate();
+            createPreparedStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void insertTable(Connection connection) {

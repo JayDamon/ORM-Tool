@@ -40,7 +40,8 @@ class DatabaseMetadataTest {
     @Test
     public void whenDropTable_tableDropped() {
         RelationalDatabaseManagement<POJODropTest> databaseManagement = new RelationalDatabaseManagement<>(POJODropTest.class, connection);
-        assertTrue(databaseManagement.dropTable(new POJODropTest()));
         assertTrue(DatabaseMetadata.tableExists(connection, Table.getTableName(POJODropTest.class).name()));
+        databaseManagement.dropTable(new POJODropTest());
+        assertFalse(DatabaseMetadata.tableExists(connection, Table.getTableName(POJODropTest.class).name()));
     }
 }

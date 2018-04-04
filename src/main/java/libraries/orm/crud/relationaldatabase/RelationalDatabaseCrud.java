@@ -288,7 +288,6 @@ public class RelationalDatabaseCrud<C extends Crudable, I> extends Crud<C, I> {
 
     private void setField(Field field, ResultSet rs, Crudable c) throws IllegalAccessException, SQLException {
         Class<?> type = field.getType();
-        //ToDo break out primative and object
         if (type.isPrimitive()) {
             if (type == boolean.class) {
                 field.setBoolean(c, rs.getBoolean(1));

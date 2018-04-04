@@ -36,12 +36,4 @@ class DatabaseMetadataTest {
     public void whenCheckForTable_tableDoesNotExists() {
         assertFalse(DatabaseMetadata.tableExists(connection, "FakeTable"));
     }
-
-    @Test
-    public void whenDropTable_tableDropped() {
-        RelationalDatabaseManagement<POJODropTest> databaseManagement = new RelationalDatabaseManagement<>(POJODropTest.class, connection);
-        assertTrue(DatabaseMetadata.tableExists(connection, Table.getTableName(POJODropTest.class).name()));
-        databaseManagement.dropTable(new POJODropTest());
-        assertFalse(DatabaseMetadata.tableExists(connection, Table.getTableName(POJODropTest.class).name()));
-    }
 }

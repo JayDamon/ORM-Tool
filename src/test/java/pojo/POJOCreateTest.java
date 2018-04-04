@@ -10,7 +10,7 @@ import java.sql.Date;
 @Table(name = "testCreateTableName")
 public class POJOCreateTest implements Crudable {
     @ID
-    @Column(name = "id")
+    @Column(name = "id", nullable = false, autoIncrement = true)
     private int id;
     @Column(name = "testString")
     private String testString;

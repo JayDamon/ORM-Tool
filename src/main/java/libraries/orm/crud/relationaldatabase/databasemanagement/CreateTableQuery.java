@@ -18,11 +18,8 @@ import java.util.Calendar;
 
 public class CreateTableQuery extends Query {
 
-    private Crudable crudable;
-
     public CreateTableQuery(Crudable crudable) {
-        super(Table.getTableName(crudable.getClass()).name());
-        this.crudable = crudable;
+        super(crudable);
     }
 
     @Override
@@ -31,25 +28,28 @@ public class CreateTableQuery extends Query {
                 .append(" ").append(tableName)
                 .append(" (");
         addFields(builder);
-        return null;
+        return builder;
     }
 
     private StringBuilder addFields(StringBuilder builder) {
-        Field[] fields = crudable.getClass().getDeclaredFields();
+        Field[] fields = getCrudable().getClass().getDeclaredFields();
         int runSize = fields.length;
-        int i = 0;
+        int i = 1;
+        String primaryKey = "";
         for (Field f : fields) {
-
             if (f.isAnnotationPresent(Column.class)) {
                 Column column = f.getAnnotation(Column.class);
                 String name = column.name();
                 builder.append(name).append(" ").append(getFieldType(f));
-                if (!column.nullable()) builder.append("NOT NULL");
+                if (column.isPrimaryKey()) primaryKey = "PRIMARY KEY(" + name + ")";
+                if (!column.nullable()) builder.append(" ").append("NOT NULL");
                 if (column.autoIncrement()) builder.append(" ").append("AUTO_INCREMENT");
             }
             if (runSize != i) builder.append(",");
             i++;
         }
+        if (!primaryKey.equals("")) builder.append(",").append(primaryKey);
+        builder.append(");");
         return builder;
     }
 
@@ -71,7 +71,7 @@ public class CreateTableQuery extends Query {
             return "REAL";
         }
         else if (type == int.class || type == Integer.class) {
-            return "INTEGER";
+            return "INT";
         }
         else if (type == double.class || type == Double.class) {
             return "FLOAT";

@@ -12,6 +12,6 @@ public abstract class DatabaseManagement<C extends Crudable> {
 
     public abstract boolean dropTable(C crudable);
 
-    public abstract boolean tableCreated(C crudable);
+    public abstract boolean createTable(C crudable);
 
 }

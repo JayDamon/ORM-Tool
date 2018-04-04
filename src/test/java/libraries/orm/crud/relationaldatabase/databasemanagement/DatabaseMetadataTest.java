@@ -17,7 +17,7 @@ import java.sql.DatabaseMetaData;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class DatabaseMetadataTest {
+public class DatabaseMetadataTest {
 
     static Connection connection;
 

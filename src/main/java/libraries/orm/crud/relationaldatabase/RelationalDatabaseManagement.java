@@ -1,6 +1,7 @@
 package libraries.orm.crud.relationaldatabase;
 
 import libraries.orm.crud.DatabaseManagement;
+import libraries.orm.crud.relationaldatabase.databasemanagement.CreateTableQuery;
 import libraries.orm.crud.relationaldatabase.databasemanagement.DropTableQuery;
 import libraries.orm.crud.relationaldatabase.query.Query;
 import libraries.orm.orm.Crudable;
@@ -37,8 +38,19 @@ public class RelationalDatabaseManagement<C extends Crudable> extends DatabaseMa
     }
 
     @Override
-    public boolean tableCreated(C crudable) {
+    public boolean createTable(C crudable) {
+        Query query = new CreateTableQuery(crudable);
+        return createTableQuery(query);
+    }
 
-        return false;
+    private boolean createTableQuery(Query query) {
+        try (
+                PreparedStatement statement = connection.prepareStatement(query.toString());
+                ) {
+            return statement.executeUpdate() == 1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

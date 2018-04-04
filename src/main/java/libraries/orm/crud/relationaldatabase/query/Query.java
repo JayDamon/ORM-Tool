@@ -2,6 +2,8 @@ package libraries.orm.crud.relationaldatabase.query;
 
 import libraries.orm.crud.Condition;
 import libraries.orm.crud.relationaldatabase.clauses.WhereClause;
+import libraries.orm.orm.Crudable;
+import libraries.orm.orm.Table;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -12,6 +14,12 @@ public abstract class Query {
     private String query;
     private WhereClause whereClause;
     private ArrayList<Condition> columnNameAndValueList;
+    private Crudable crudable;
+
+    public Query(Crudable crudable) {
+        this.crudable = crudable;
+        this.query = writeQuery(Table.getTableName(crudable.getClass()).name(), columnNameAndValueList).toString();
+    }
 
     public Query(String tableName, String... columnNames) {
         populateConditionsAndValues(columnNames);
@@ -59,5 +67,9 @@ public abstract class Query {
 
     public ArrayList<Condition> getColumnNameAndValueList() {
         return columnNameAndValueList;
+    }
+
+    public Crudable getCrudable() {
+        return crudable;
     }
 }

@@ -1,4 +1,7 @@
 import libraries.orm.crud.relationaldatabase.CrudableFactoryTest;
+import libraries.orm.crud.relationaldatabase.databasemanagement.CreateTableTest;
+import libraries.orm.crud.relationaldatabase.databasemanagement.DatabaseMetadataTest;
+import libraries.orm.crud.relationaldatabase.databasemanagement.DropTableTest;
 import libraries.orm.crud.relationaldatabase.query.*;
 import libraries.orm.crud.relationaldatabase.clauses.*;
 import libraries.orm.orm.TableTest;
@@ -19,7 +22,9 @@ import org.junit.runner.RunWith;
         WhereClauseTest.class,
         TableTestPOJOWithAnnotations.class,
         CRUDTest.class,
-        CrudableFactoryTest.class
+        CrudableFactoryTest.class,
+        CreateTableTest.class,
+        DatabaseMetadataTest.class,
+        DropTableTest.class
 })
-
 public class TestSuite {}

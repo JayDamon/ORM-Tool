@@ -1,5 +1,6 @@
 package pojo;
 
+import libraries.orm.annotations.Ignore;
 import libraries.orm.annotations.Table;
 import java.util.Date;
 import libraries.orm.orm.Crudable;
@@ -7,14 +8,14 @@ import libraries.orm.orm.Crudable;
 @Table(
         name = "testTableName"
 )
-public class POJONoFieldAnnotations implements Crudable {
+public class POJOWithIgnoreAnnotation implements Crudable {
     private String testString;
-
+    @Ignore
     private int testInt;
     private double testDouble;
     private Date testDate;
 
-    public POJONoFieldAnnotations() {
+    public POJOWithIgnoreAnnotation() {
     }
 
     public String getTestString() {

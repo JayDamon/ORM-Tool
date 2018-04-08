@@ -8,6 +8,9 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import pojo.POJOCreateTest;
+import pojo.POJONoAnnotation;
+import pojo.POJONoFieldAnnotations;
+import pojo.POJOWithIgnoreAnnotation;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -51,11 +54,24 @@ public class CreateTableTest {
         assertTrue(DatabaseMetadata.tableExists(connection, Table.getTableName(POJOCreateTest.class).name()));
     }
 
-//    @Test
-//    public void whenDropTable_tableDropped() {
-//        RelationalDatabaseManagement<POJODropTest> databaseManagement = new RelationalDatabaseManagement<>(POJODropTest.class, connection);
-//        assertTrue(DatabaseMetadata.tableExists(connection, Table.getTableName(POJODropTest.class).name()));
-//        databaseManagement.dropTable(new POJODropTest());
-//        assertFalse(DatabaseMetadata.tableExists(connection, Table.getTableName(POJODropTest.class).name()));
-//    }
+    @Test
+    public void whenWriteCreateTableQueryWithoutAnnotations_queryCreated() {
+        String createQuery = "CREATE TABLE testTableName (" +
+                "testString VARCHAR," +
+                "testInt INT," +
+                "testDouble FLOAT," +
+                "testDate DATE" +
+                ");";
+        assertEquals(createQuery, new CreateTableQuery(new POJONoFieldAnnotations()).toString());
+    }
+
+    @Test
+    public void whenWriteTableQuery_queryCreatedWithoutIgnoredFields() {
+        String createQuery = "CREATE TABLE testTableName (" +
+                "testString VARCHAR," +
+                "testDouble FLOAT," +
+                "testDate DATE" +
+                ");";
+        assertEquals(createQuery, new CreateTableQuery(new POJOWithIgnoreAnnotation()).toString());
+    }
 }

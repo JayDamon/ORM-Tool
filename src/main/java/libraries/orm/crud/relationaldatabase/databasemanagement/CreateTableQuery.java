@@ -2,6 +2,7 @@ package libraries.orm.crud.relationaldatabase.databasemanagement;
 
 import libraries.orm.annotations.Column;
 import libraries.orm.annotations.ID;
+import libraries.orm.annotations.Ignore;
 import libraries.orm.crud.Condition;
 import libraries.orm.crud.relationaldatabase.query.Query;
 import libraries.orm.orm.Crudable;
@@ -37,15 +38,20 @@ public class CreateTableQuery extends Query {
         int i = 1;
         String primaryKey = "";
         for (Field f : fields) {
-            if (f.isAnnotationPresent(Column.class)) {
-                Column column = f.getAnnotation(Column.class);
-                String name = column.name();
-                builder.append(name).append(" ").append(getFieldType(f));
-                if (column.isPrimaryKey()) primaryKey = "PRIMARY KEY(" + name + ")";
-                if (!column.nullable()) builder.append(" ").append("NOT NULL");
-                if (column.autoIncrement()) builder.append(" ").append("AUTO_INCREMENT");
+            if (!f.isAnnotationPresent(Ignore.class)) {
+                if (f.isAnnotationPresent(Column.class)) {
+                    Column column = f.getAnnotation(Column.class);
+                    String name = column.name();
+                    builder.append(name).append(" ").append(getFieldType(f));
+                    if (column.isPrimaryKey()) primaryKey = "PRIMARY KEY(" + name + ")";
+                    if (!column.nullable()) builder.append(" ").append("NOT NULL");
+                    if (column.autoIncrement()) builder.append(" ").append("AUTO_INCREMENT");
+                } else {
+                    String name = f.getName();
+                    builder.append(name).append(" ").append(getFieldType(f));
+                }
+                if (runSize != i) builder.append(",");
             }
-            if (runSize != i) builder.append(",");
             i++;
         }
         if (!primaryKey.equals("")) builder.append(",").append(primaryKey);

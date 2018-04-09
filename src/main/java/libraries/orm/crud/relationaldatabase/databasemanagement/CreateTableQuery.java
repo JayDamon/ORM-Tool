@@ -51,6 +51,8 @@ public class CreateTableQuery extends Query {
                     builder.append(name).append(" ").append(getFieldType(f));
                 }
                 if (runSize != i) builder.append(",");
+            } else {
+                if (runSize == i) builder.deleteCharAt(builder.length() -1);
             }
             i++;
         }

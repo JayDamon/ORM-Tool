@@ -69,9 +69,17 @@ public class CreateTableTest {
     public void whenWriteTableQuery_queryCreatedWithoutIgnoredFields() {
         String createQuery = "CREATE TABLE testTableName (" +
                 "testString VARCHAR," +
-                "testDouble FLOAT," +
-                "testDate DATE" +
+                "testDouble FLOAT" +
                 ");";
         assertEquals(createQuery, new CreateTableQuery(new POJOWithIgnoreAnnotation()).toString());
+    }
+
+    @Test
+    public void whenIgnoreIsLastField_generateQuery() {
+        String createQuery = "CREATE TABLE testTableName (" +
+                "testString VARCHAR," +
+                "testDouble FLOAT" +
+                ");";
+        assertEquals(createQuery,  new CreateTableQuery(new POJOWithIgnoreAnnotation()).toString());
     }
 }

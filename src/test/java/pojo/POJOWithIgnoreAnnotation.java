@@ -13,6 +13,7 @@ public class POJOWithIgnoreAnnotation implements Crudable {
     @Ignore
     private int testInt;
     private double testDouble;
+    @Ignore
     private Date testDate;
 
     public POJOWithIgnoreAnnotation() {

@@ -9,10 +9,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import pojo.POJOBoxed;
-import pojo.POJOIncludeID;
-import pojo.POJOWithAnnotations;
-import pojo.POJOWithData;
+import pojo.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.*;
@@ -269,5 +266,25 @@ public class CRUDTest {
         Crud<POJOBoxed, Connection> crud = new RelationalDatabaseCrud<>(POJOBoxed.class, connection);
         crud.create(pojo);
         assertNotEquals(0, pojo.getId().intValue());
+    }
+
+    @Test
+    public void whenCreateQueryWithCalendar_calendarAdded() {
+        POJOWithCalendar pojo = new POJOWithCalendar();
+        pojo.setTestString("Test");
+        pojo.setTestInt(5);
+        pojo.setTestDouble(5.22);
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2017, Calendar.MAY, 20, 4, 30, 2);
+        pojo.setTestCalendar(calendar);
+        Crud<POJOWithCalendar, Integer> crud = new RelationalDatabaseCrud(POJOWithCalendar.class, connection);
+        assertTrue(crud.create(pojo));
+
+        ArrayList<Condition> conditions = new ArrayList<>();
+        conditions.add(new Condition("testString", "Test"));
+        conditions.add(new Condition("testInt", 5));
+        conditions.add(new Condition("testDouble", 5.22));
+
+        assertTrue(crud.exists(pojo, conditions));
     }
 }

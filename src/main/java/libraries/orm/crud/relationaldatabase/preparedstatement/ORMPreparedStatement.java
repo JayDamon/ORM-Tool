@@ -7,6 +7,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -43,6 +44,8 @@ public class ORMPreparedStatement {
             setStatementParameter(statement, i, (double)o);
         } else if (o instanceof Date) {
             setStatementParameter(statement, i, (Date) o);
+        } else if (o instanceof Calendar) {
+            setStatementParameter(statement, i, new Date(((Calendar) o).getTimeInMillis()));
         }
     }
 

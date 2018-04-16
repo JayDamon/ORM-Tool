@@ -33,11 +33,10 @@ public class CrudableFactory {
                         if (resultType.equals(fieldType)) {
                             f.set(crudable, results.get(name));
                         }
-                        if (resultType == java.sql.Date.class && fieldType == Calendar.class) {
+                        if (resultType == java.sql.Timestamp.class && fieldType == Calendar.class) {
                             Calendar cal = Calendar.getInstance();
-                            java.sql.Date date = (java.sql.Date)results.get(name);
                             cal.setTime(
-                                    (java.sql.Date)results.get(name)
+                                    (java.sql.Timestamp)results.get(name)
                             );
                             f.set(crudable, cal);
                         }

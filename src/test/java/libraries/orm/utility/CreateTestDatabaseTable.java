@@ -68,6 +68,7 @@ public class CreateTestDatabaseTable {
                 "testInt int(10)," +
                 "testDouble Double," +
                 "testDate DATE," +
+                "testCalendar TIMESTAMP," +
                 "PRIMARY KEY (id)" +
                 ");";
 

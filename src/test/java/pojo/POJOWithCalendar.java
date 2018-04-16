@@ -18,7 +18,7 @@ public class POJOWithCalendar implements Crudable {
     private int testInt;
     @Column(name = "testDouble")
     private double testDouble;
-    @Column(name = "testDate")
+    @Column(name = "testCalendar")
     private Calendar testCalendar;
 
     public POJOWithCalendar() {

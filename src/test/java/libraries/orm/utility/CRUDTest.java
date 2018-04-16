@@ -272,7 +272,7 @@ public class CRUDTest {
     public void whenCreateQueryWithCalendar_calendarAdded() {
         POJOWithCalendar pojo = new POJOWithCalendar();
         pojo.setTestString("Test");
-        pojo.setTestInt(5);
+        pojo.setTestInt(87);
         pojo.setTestDouble(5.22);
         Calendar calendar = Calendar.getInstance();
         calendar.set(2017, Calendar.MAY, 20, 4, 30, 2);
@@ -282,9 +282,13 @@ public class CRUDTest {
 
         ArrayList<Condition> conditions = new ArrayList<>();
         conditions.add(new Condition("testString", "Test"));
-        conditions.add(new Condition("testInt", 5));
+        conditions.add(new Condition("testInt", 87));
         conditions.add(new Condition("testDouble", 5.22));
 
         assertTrue(crud.exists(pojo, conditions));
+
+        List<POJOWithCalendar> pojos = crud.read(conditions);
+
+        assertNotNull(pojos.get(0).getTestCalendar());
     }
 }

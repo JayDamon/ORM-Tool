@@ -5,7 +5,6 @@ import libraries.orm.annotations.ID;
 import libraries.orm.annotations.Table;
 import libraries.orm.orm.Crudable;
 
-import java.sql.Date;
 import java.util.Calendar;
 
 @Table(name = "testTableName")

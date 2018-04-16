@@ -5,6 +5,7 @@ import libraries.orm.annotations.Column;
 import libraries.orm.orm.Crudable;
 
 import java.lang.reflect.Field;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,6 +32,14 @@ public class CrudableFactory {
                         Class<?> resultType = fieldClass.isPrimitive() ? primitivesMap.get(fieldClass) : fieldClass;
                         if (resultType.equals(fieldType)) {
                             f.set(crudable, results.get(name));
+                        }
+                        if (resultType == java.sql.Date.class && fieldType == Calendar.class) {
+                            Calendar cal = Calendar.getInstance();
+                            java.sql.Date date = (java.sql.Date)results.get(name);
+                            cal.setTime(
+                                    (java.sql.Date)results.get(name)
+                            );
+                            f.set(crudable, cal);
                         }
                     }
                 }

@@ -94,9 +94,9 @@ public class CreateTableQuery extends Query {
             return "BIGINT";
         } else if (type == java.sql.Date.class || type == java.util.Date.class) {
             return "DATE";
-        } else if (type == java.sql.Time.class || type == Calendar.class) {
+        } else if (type == java.sql.Time.class) {
             return "TIME";
-        } else if (type == Timestamp.class) {
+        } else if (type == Timestamp.class || type == Calendar.class) {
             return "TIMESTAMP";
         }
         throw new IllegalArgumentException(type + " Is not an accepted field datatype");

@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedHashMap;
@@ -45,7 +46,7 @@ public class ORMPreparedStatement {
         } else if (o instanceof Date) {
             setStatementParameter(statement, i, (Date) o);
         } else if (o instanceof Calendar) {
-            setStatementParameter(statement, i, new Date(((Calendar) o).getTimeInMillis()));
+            setStatementParameter(statement, i, new Timestamp(((Calendar) o).getTimeInMillis()));
         }
     }
 
@@ -97,6 +98,11 @@ public class ORMPreparedStatement {
     private static void setStatementParameter(PreparedStatement stmt, int parameterIndex, Date value)
             throws SQLException {
         stmt.setDate(parameterIndex, value);
+    }
+
+    private static void setStatementParameter(PreparedStatement stmt, int parameterIndex, Timestamp value)
+            throws SQLException {
+        stmt.setTimestamp(parameterIndex, value);
     }
 }
 
